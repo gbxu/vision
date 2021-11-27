@@ -198,7 +198,7 @@ class RetinaNetRegressionHead(nn.Module):
             target_regression = self.box_coder.encode_single(matched_gt_boxes_per_image, anchors_per_image)
 
             # compute the loss
-            losses.append(torch.nn.functional.l1_loss(
+            losses.append(torch.nn.functional.cross_entropy(
                 bbox_regression_per_image,
                 target_regression,
                 reduction='sum'

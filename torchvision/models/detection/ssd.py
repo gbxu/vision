@@ -241,7 +241,12 @@ class SSD(nn.Module):
             bbox_regression_per_image = bbox_regression_per_image[foreground_idxs_per_image, :]
             anchors_per_image = anchors_per_image[foreground_idxs_per_image, :]
             target_regression = self.box_coder.encode_single(matched_gt_boxes_per_image, anchors_per_image)
-            bbox_loss.append(torch.nn.functional.smooth_l1_loss(
+            # bbox_loss.append(torch.nn.functional.smooth_l1_loss(
+            #     bbox_regression_per_image,
+            #     target_regression,
+            #     reduction='sum'
+            # ))
+            bbox_loss.append(torch.nn.functional.cross_entropy(
                 bbox_regression_per_image,
                 target_regression,
                 reduction='sum'

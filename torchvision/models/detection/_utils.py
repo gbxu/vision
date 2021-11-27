@@ -54,8 +54,10 @@ class BalancedPositiveNegativeSampler(object):
             num_neg = min(negative.numel(), num_neg)
 
             # randomly select positive and negative examples
-            perm1 = torch.randperm(positive.numel(), device=positive.device)[:num_pos]
-            perm2 = torch.randperm(negative.numel(), device=negative.device)[:num_neg]
+            # perm1 = torch.randperm(positive.numel(), device=positive.device)[:num_pos]
+            # perm2 = torch.randperm(negative.numel(), device=negative.device)[:num_neg]
+            perm1 = torch.randint(0, positive.numel(), (positive.numel(), ), device=positive.device)[:num_pos]
+            perm2 = torch.randint(0, negative.numel(), (negative.numel(), ), device=negative.device)[:num_neg]
 
             pos_idx_per_image = positive[perm1]
             neg_idx_per_image = negative[perm2]
