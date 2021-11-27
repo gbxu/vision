@@ -105,7 +105,7 @@ DenseNetImpl::DenseNetImpl(
   features->push_back("norm0", torch::nn::BatchNorm2d(num_init_features));
   features->push_back("relu0", torch::nn::Functional(modelsimpl::relu_));
   features->push_back(
-      "pool0", torch::nn::Functional(torch::max_pool2d, 3, 2, 1, 1, false));
+      "pool0", torch::nn::Functional(torch::avg_pool2d, 3, 2, 1, 1, false));
 
   // Each denseblock
   auto num_features = num_init_features;

@@ -121,7 +121,7 @@ class ShuffleNetV2(nn.Module):
         )
         input_channels = output_channels
 
-        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        self.maxpool = nn.AvgPool2d(kernel_size=3, stride=2, padding=1, count_include_pad=False)
 
         # Static annotations for mypy
         self.stage2: nn.Sequential

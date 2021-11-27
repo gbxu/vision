@@ -85,7 +85,7 @@ torch::Tensor InceptionBImpl::forward(const torch::Tensor& x) {
   branch3x3dbl = this->branch3x3dbl_2->forward(branch3x3dbl);
   branch3x3dbl = this->branch3x3dbl_3->forward(branch3x3dbl);
 
-  auto branch_pool = torch::max_pool2d(x, 3, 2);
+  auto branch_pool = torch::avg_pool2d(x, 3, 2);
   return torch::cat({branch3x3, branch3x3dbl, branch_pool}, 1);
 }
 
@@ -162,7 +162,7 @@ torch::Tensor InceptionDImpl::forward(const torch::Tensor& x) {
   branch7x7x3 = this->branch7x7x3_3->forward(branch7x7x3);
   branch7x7x3 = this->branch7x7x3_4->forward(branch7x7x3);
 
-  auto branch_pool = torch::max_pool2d(x, 3, 2);
+  auto branch_pool = torch::avg_pool2d(x, 3, 2);
   return torch::cat({branch3x3, branch7x7x3, branch_pool}, 1);
 }
 
@@ -322,13 +322,13 @@ InceptionV3Output InceptionV3Impl::forward(torch::Tensor x) {
   // N x 32 x 147 x 147
   x = Conv2d_2b_3x3->forward(x);
   // N x 64 x 147 x 147
-  x = torch::max_pool2d(x, 3, 2);
+  x = torch::avg_pool2d(x, 3, 2);
   // N x 64 x 73 x 73
   x = Conv2d_3b_1x1->forward(x);
   // N x 80 x 73 x 73
   x = Conv2d_4a_3x3->forward(x);
   // N x 192 x 71 x 71
-  x = torch::max_pool2d(x, 3, 2);
+  x = torch::avg_pool2d(x, 3, 2);
   // N x 192 x 35 x 35
   x = Mixed_5b->forward(x);
   // N x 256 x 35 x 35

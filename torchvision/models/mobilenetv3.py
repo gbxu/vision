@@ -24,7 +24,7 @@ class SqueezeExcitation(SElayer):
     """
     def __init__(self, input_channels: int, squeeze_factor: int = 4):
         squeeze_channels = _make_divisible(input_channels // squeeze_factor, 8)
-        super().__init__(input_channels, squeeze_channels, scale_activation=nn.Hardsigmoid)
+        super().__init__(input_channels, squeeze_channels, scale_activation=nn.ReLU)
         self.relu = self.activation
         delattr(self, 'activation')
         warnings.warn(
@@ -53,7 +53,7 @@ class InvertedResidualConfig:
 class InvertedResidual(nn.Module):
     # Implemented as described at section 5 of MobileNetV3 paper
     def __init__(self, cnf: InvertedResidualConfig, norm_layer: Callable[..., nn.Module],
-                 se_layer: Callable[..., nn.Module] = partial(SElayer, scale_activation=nn.Hardsigmoid)):
+                 se_layer: Callable[..., nn.Module] = partial(SElayer, scale_activation=nn.ReLU)):
         super().__init__()
         if not (1 <= cnf.stride <= 2):
             raise ValueError('illegal stride value')
@@ -61,7 +61,7 @@ class InvertedResidual(nn.Module):
         self.use_res_connect = cnf.stride == 1 and cnf.input_channels == cnf.out_channels
 
         layers: List[nn.Module] = []
-        activation_layer = nn.Hardswish if cnf.use_hs else nn.ReLU
+        activation_layer = nn.ReLU if cnf.use_hs else nn.ReLU
 
         # expand
         if cnf.expanded_channels != cnf.input_channels:
@@ -132,7 +132,7 @@ class MobileNetV3(nn.Module):
         # building first layer
         firstconv_output_channels = inverted_residual_setting[0].input_channels
         layers.append(ConvNormActivation(3, firstconv_output_channels, kernel_size=3, stride=2, norm_layer=norm_layer,
-                                         activation_layer=nn.Hardswish))
+                                         activation_layer=nn.ReLU))
 
         # building inverted residual blocks
         for cnf in inverted_residual_setting:
@@ -142,13 +142,13 @@ class MobileNetV3(nn.Module):
         lastconv_input_channels = inverted_residual_setting[-1].out_channels
         lastconv_output_channels = 6 * lastconv_input_channels
         layers.append(ConvNormActivation(lastconv_input_channels, lastconv_output_channels, kernel_size=1,
-                                         norm_layer=norm_layer, activation_layer=nn.Hardswish))
+                                         norm_layer=norm_layer, activation_layer=nn.ReLU))
 
         self.features = nn.Sequential(*layers)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.classifier = nn.Sequential(
             nn.Linear(lastconv_output_channels, last_channel),
-            nn.Hardswish(inplace=True),
+            nn.ReLU(inplace=True),
             nn.Dropout(p=0.2, inplace=True),
             nn.Linear(last_channel, num_classes),
         )

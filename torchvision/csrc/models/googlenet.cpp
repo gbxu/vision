@@ -41,7 +41,7 @@ InceptionImpl::InceptionImpl(
   branch3->push_back(BasicConv2d(Options(ch5x5red, ch5x5, 3).padding(1)));
 
   branch4->push_back(
-      torch::nn::Functional(torch::max_pool2d, 3, 1, 1, 1, true));
+      torch::nn::Functional(torch::avg_pool2d, 3, 1, 1, 1, true));
   branch4->push_back(BasicConv2d(Options(in_channels, pool_proj, 1)));
 
   register_module("branch1", branch1);
@@ -179,20 +179,20 @@ GoogLeNetOutput GoogLeNetImpl::forward(torch::Tensor x) {
   // N x 3 x 224 x 224
   x = conv1->forward(x);
   // N x 64 x 112 x 112
-  x = torch::max_pool2d(x, 3, 2, 0, 1, true);
+  x = torch::avg_pool2d(x, 3, 2, 0, 1, true);
   // N x 64 x 56 x 56
   x = conv2->forward(x);
   // N x 64 x 56 x 56
   x = conv3->forward(x);
   // N x 192 x 56 x 56
-  x = torch::max_pool2d(x, 3, 2, 0, 1, true);
+  x = torch::avg_pool2d(x, 3, 2, 0, 1, true);
 
   // N x 192 x 28 x 28
   x = inception3a->forward(x);
   // N x 256 x 28 x 28
   x = inception3b->forward(x);
   // N x 480 x 28 x 28
-  x = torch::max_pool2d(x, 3, 2, 0, 1, true);
+  x = torch::avg_pool2d(x, 3, 2, 0, 1, true);
   // N x 480 x 14 x 14
   x = inception4a->forward(x);
   // N x 512 x 14 x 14
@@ -212,7 +212,7 @@ GoogLeNetOutput GoogLeNetImpl::forward(torch::Tensor x) {
 
   x = inception4e(x);
   // N x 832 x 14 x 14
-  x = torch::max_pool2d(x, 2, 2, 0, 1, true);
+  x = torch::avg_pool2d(x, 2, 2, 0, 1, true);
   // N x 832 x 7 x 7
   x = inception5a(x);
   // N x 832 x 7 x 7

@@ -21,7 +21,7 @@ class QuantizableSqueezeExcitation(SqueezeExcitation):
     _version = 2
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        kwargs["scale_activation"] = nn.Hardsigmoid
+        kwargs["scale_activation"] = nn.ReLU
         super().__init__(*args, **kwargs)
         self.skip_mul = nn.quantized.FloatFunctional()
 

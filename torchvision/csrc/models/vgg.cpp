@@ -13,7 +13,7 @@ torch::nn::Sequential makeLayers(
 
   for (const auto& V : cfg) {
     if (V <= -1)
-      seq->push_back(torch::nn::Functional(modelsimpl::max_pool2d, 2, 2));
+      seq->push_back(torch::nn::Functional(modelsimpl::avg_pool2d, 2, 2));
     else {
       seq->push_back(torch::nn::Conv2d(
           torch::nn::Conv2dOptions(channels, V, 3).padding(1)));

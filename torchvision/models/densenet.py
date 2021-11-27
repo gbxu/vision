@@ -136,7 +136,7 @@ class _Transition(nn.Sequential):
         self.add_module('relu', nn.ReLU(inplace=True))
         self.add_module('conv', nn.Conv2d(num_input_features, num_output_features,
                                           kernel_size=1, stride=1, bias=False))
-        self.add_module('pool', nn.AvgPool2d(kernel_size=2, stride=2))
+        self.add_module('pool', nn.AvgPool2d(kernel_size=2, stride=2, count_include_pad=False))
 
 
 class DenseNet(nn.Module):
@@ -174,7 +174,7 @@ class DenseNet(nn.Module):
                                 padding=3, bias=False)),
             ('norm0', nn.BatchNorm2d(num_init_features)),
             ('relu0', nn.ReLU(inplace=True)),
-            ('pool0', nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
+            ('pool0', nn.AvgPool2d(kernel_size=3, stride=2, padding=1, count_include_pad=False)),
         ]))
 
         # Each denseblock

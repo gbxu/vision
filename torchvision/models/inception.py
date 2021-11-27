@@ -96,10 +96,10 @@ class Inception3(nn.Module):
         self.Conv2d_1a_3x3 = conv_block(3, 32, kernel_size=3, stride=2)
         self.Conv2d_2a_3x3 = conv_block(32, 32, kernel_size=3)
         self.Conv2d_2b_3x3 = conv_block(32, 64, kernel_size=3, padding=1)
-        self.maxpool1 = nn.MaxPool2d(kernel_size=3, stride=2)
+        self.maxpool1 = nn.AvgPool2d(kernel_size=3, stride=2, count_include_pad=False)
         self.Conv2d_3b_1x1 = conv_block(64, 80, kernel_size=1)
         self.Conv2d_4a_3x3 = conv_block(80, 192, kernel_size=3)
-        self.maxpool2 = nn.MaxPool2d(kernel_size=3, stride=2)
+        self.maxpool2 = nn.AvgPool2d(kernel_size=3, stride=2, count_include_pad=False)
         self.Mixed_5b = inception_a(192, pool_features=32)
         self.Mixed_5c = inception_a(256, pool_features=64)
         self.Mixed_5d = inception_a(288, pool_features=64)
@@ -273,7 +273,7 @@ class InceptionB(nn.Module):
         branch3x3dbl = self.branch3x3dbl_2(branch3x3dbl)
         branch3x3dbl = self.branch3x3dbl_3(branch3x3dbl)
 
-        branch_pool = F.max_pool2d(x, kernel_size=3, stride=2)
+        branch_pool = F.avg_pool2d(x, kernel_size=3, stride=2, count_include_pad=False)
 
         outputs = [branch3x3, branch3x3dbl, branch_pool]
         return outputs
@@ -360,7 +360,7 @@ class InceptionD(nn.Module):
         branch7x7x3 = self.branch7x7x3_3(branch7x7x3)
         branch7x7x3 = self.branch7x7x3_4(branch7x7x3)
 
-        branch_pool = F.max_pool2d(x, kernel_size=3, stride=2)
+        branch_pool = F.avg_pool2d(x, kernel_size=3, stride=2, count_include_pad=False)
         outputs = [branch3x3, branch7x7x3, branch_pool]
         return outputs
 

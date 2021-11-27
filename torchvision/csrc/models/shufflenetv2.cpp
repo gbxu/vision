@@ -152,7 +152,7 @@ ShuffleNetV2Impl::ShuffleNetV2Impl(
 
 torch::Tensor ShuffleNetV2Impl::forward(torch::Tensor x) {
   x = conv1->forward(x);
-  x = torch::max_pool2d(x, 3, 2, 1);
+  x = torch::avg_pool2d(x, 3, 2, 1);
 
   x = stage2->forward(x);
   x = stage3->forward(x);

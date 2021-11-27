@@ -23,11 +23,11 @@ inline torch::Tensor adaptive_avg_pool2d(
   return torch::adaptive_avg_pool2d(x, output_size);
 }
 
-inline torch::Tensor max_pool2d(
+inline torch::Tensor avg_pool2d(
     const torch::Tensor& x,
     torch::ExpandingArray<2> kernel_size,
     torch::ExpandingArray<2> stride) {
-  return torch::max_pool2d(x, kernel_size, stride);
+  return torch::avg_pool2d(x, kernel_size, stride);
 }
 
 inline bool double_compare(double a, double b) {

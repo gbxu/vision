@@ -419,7 +419,7 @@ class SSDFeatureExtractorVGG(nn.Module):
     def __init__(self, backbone: nn.Module, highres: bool):
         super().__init__()
 
-        _, _, maxpool3_pos, maxpool4_pos, _ = (i for i, layer in enumerate(backbone) if isinstance(layer, nn.MaxPool2d))
+        _, _, maxpool3_pos, maxpool4_pos, _ = (i for i, layer in enumerate(backbone) if isinstance(layer, nn.AvgPool2d))
 
         # Patch ceil_mode for maxpool3 to get the same WxH output sizes as the paper
         backbone[maxpool3_pos].ceil_mode = True
@@ -470,7 +470,7 @@ class SSDFeatureExtractorVGG(nn.Module):
         _xavier_init(extra)
 
         fc = nn.Sequential(
-            nn.MaxPool2d(kernel_size=3, stride=1, padding=1, ceil_mode=False),  # add modified maxpool5
+            nn.AvgPool2d(kernel_size=3, stride=1, padding=1, ceil_mode=False, count_include_pad=False),  # add modified maxpool5
             nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=3, padding=6, dilation=6),  # FC6 with atrous
             nn.ReLU(inplace=True),
             nn.Conv2d(in_channels=1024, out_channels=1024, kernel_size=1),  # FC7
@@ -510,7 +510,7 @@ def _vgg_extractor(backbone_name: str, highres: bool, progress: bool, pretrained
         backbone = vgg.__dict__[backbone_name](pretrained=pretrained, progress=progress).features
 
     # Gather the indices of maxpools. These are the locations of output blocks.
-    stage_indices = [0] + [i for i, b in enumerate(backbone) if isinstance(b, nn.MaxPool2d)][:-1]
+    stage_indices = [0] + [i for i, b in enumerate(backbone) if isinstance(b, nn.AvgPool2d)][:-1]
     num_stages = len(stage_indices)
 
     # find the index of the layer from which we wont freeze

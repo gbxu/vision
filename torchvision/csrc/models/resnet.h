@@ -173,7 +173,7 @@ template <typename Block>
 torch::Tensor ResNetImpl<Block>::forward(torch::Tensor x) {
   x = conv1->forward(x);
   x = bn1->forward(x).relu_();
-  x = torch::max_pool2d(x, 3, 2, 1);
+  x = torch::avg_pool2d(x, 3, 2, 1);
 
   x = layer1->forward(x);
   x = layer2->forward(x);
