@@ -33,7 +33,7 @@ struct ConvBNReLUImpl : torch::nn::SequentialImpl {
                                     .padding(padding)
                                     .groups(groups)
                                     .bias(false)));
-    push_back(torch::nn::BatchNorm2d(out_planes));
+    // push_back(torch::nn::BatchNorm2d(out_planes));
     push_back(torch::nn::Functional(modelsimpl::relu6_));
   }
 
@@ -68,7 +68,7 @@ struct MobileNetInvertedResidualImpl : torch::nn::Module {
     conv->push_back(ConvBNReLU(hidden_dim, hidden_dim, 3, stride, hidden_dim));
     conv->push_back(torch::nn::Conv2d(
         Options(hidden_dim, output, 1).stride(1).padding(0).bias(false)));
-    conv->push_back(torch::nn::BatchNorm2d(output));
+    // conv->push_back(torch::nn::BatchNorm2d(output));
 
     register_module("conv", conv);
   }

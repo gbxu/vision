@@ -99,7 +99,7 @@ torch::nn::Sequential ResNetImpl<Block>::_make_layer(
   if (stride != 1 || inplanes != planes * Block::expansion) {
     downsample = torch::nn::Sequential(
         _resnetimpl::conv1x1(inplanes, planes * Block::expansion, stride),
-        torch::nn::BatchNorm2d(planes * Block::expansion));
+        // torch::nn::BatchNorm2d(planes * Block::expansion));
   }
 
   torch::nn::Sequential layers;

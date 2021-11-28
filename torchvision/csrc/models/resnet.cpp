@@ -44,8 +44,8 @@ BasicBlock::BasicBlock(
   register_module("conv1", conv1);
   register_module("conv2", conv2);
 
-  register_module("bn1", bn1);
-  register_module("bn2", bn2);
+  // register_module("bn1", bn1);
+  // register_module("bn2", bn2);
 
   if (!downsample.is_empty())
     register_module("downsample", this->downsample);
@@ -74,9 +74,9 @@ Bottleneck::Bottleneck(
   register_module("conv2", conv2);
   register_module("conv3", conv3);
 
-  register_module("bn1", bn1);
-  register_module("bn2", bn2);
-  register_module("bn3", bn3);
+  // register_module("bn1", bn1);
+  // register_module("bn2", bn2);
+  // register_module("bn3", bn3);
 
   if (!downsample.is_empty())
     register_module("downsample", this->downsample);

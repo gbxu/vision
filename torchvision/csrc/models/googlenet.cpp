@@ -15,7 +15,7 @@ BasicConv2dImpl::BasicConv2dImpl(torch::nn::Conv2dOptions options) {
       torch::nn::BatchNormOptions(options.out_channels()).eps(0.001));
 
   register_module("conv", conv);
-  register_module("bn", bn);
+  // register_module("bn", bn);
 }
 
 torch::Tensor BasicConv2dImpl::forward(torch::Tensor x) {
