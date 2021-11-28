@@ -182,7 +182,7 @@ class EfficientNet(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout, inplace=True),
-            nn.Linear(lastconv_output_channels, num_classes),
+            nn.Linear(lastconv_output_channels, num_classes, bias=False),
         )
 
         for m in self.modules():
@@ -196,7 +196,7 @@ class EfficientNet(nn.Module):
             elif isinstance(m, nn.Linear):
                 init_range = 1.0 / math.sqrt(m.out_features)
                 nn.init.uniform_(m.weight, -init_range, init_range)
-                nn.init.zeros_(m.bias)
+                # nn.init.zeros_(m.bias)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)

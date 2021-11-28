@@ -143,7 +143,7 @@ class ShuffleNetV2(nn.Module):
             nn.ReLU(inplace=True),
         )
 
-        self.fc = nn.Linear(output_channels, num_classes)
+        self.fc = nn.Linear(output_channels, num_classes, bias=False)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         # See note [TorchScript super()]

@@ -248,8 +248,8 @@ class TwoMLPHead(nn.Module):
     def __init__(self, in_channels, representation_size):
         super(TwoMLPHead, self).__init__()
 
-        self.fc6 = nn.Linear(in_channels, representation_size)
-        self.fc7 = nn.Linear(representation_size, representation_size)
+        self.fc6 = nn.Linear(in_channels, representation_size, bias=False)
+        self.fc7 = nn.Linear(representation_size, representation_size, bias=False)
 
     def forward(self, x):
         x = x.flatten(start_dim=1)
@@ -272,8 +272,8 @@ class FastRCNNPredictor(nn.Module):
 
     def __init__(self, in_channels, num_classes):
         super(FastRCNNPredictor, self).__init__()
-        self.cls_score = nn.Linear(in_channels, num_classes)
-        self.bbox_pred = nn.Linear(in_channels, num_classes * 4)
+        self.cls_score = nn.Linear(in_channels, num_classes, bias=False)
+        self.bbox_pred = nn.Linear(in_channels, num_classes * 4, bias=False)
 
     def forward(self, x):
         if x.dim() == 4:

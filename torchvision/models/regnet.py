@@ -348,7 +348,7 @@ class RegNet(nn.Module):
         self.trunk_output = nn.Sequential(OrderedDict(blocks))
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(in_features=current_width, out_features=num_classes)
+        self.fc = nn.Linear(in_features=current_width, out_features=num_classes, bias=False)
 
         # Init weights and good to go
         self._reset_parameters()
@@ -375,7 +375,7 @@ class RegNet(nn.Module):
                 nn.init.zeros_(m.bias)
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, mean=0.0, std=0.01)
-                nn.init.zeros_(m.bias)
+                # nn.init.zeros_(m.bias)
 
 
 def _regnet(arch: str, block_params: BlockParams, pretrained: bool, progress: bool, **kwargs: Any) -> RegNet:

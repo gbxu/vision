@@ -116,7 +116,7 @@ class GoogLeNet(nn.Module):
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.dropout = nn.Dropout(0.2)
-        self.fc = nn.Linear(1024, num_classes)
+        self.fc = nn.Linear(1024, num_classes, bias=False)
 
         if init_weights:
             self._initialize_weights()
@@ -273,8 +273,8 @@ class InceptionAux(nn.Module):
             conv_block = BasicConv2d
         self.conv = conv_block(in_channels, 128, kernel_size=1)
 
-        self.fc1 = nn.Linear(2048, 1024)
-        self.fc2 = nn.Linear(1024, num_classes)
+        self.fc1 = nn.Linear(2048, 1024, bias=False)
+        self.fc2 = nn.Linear(1024, num_classes, bias=False)
 
     def forward(self, x: Tensor) -> Tensor:
         # aux1: N x 512 x 14 x 14, aux2: N x 528 x 14 x 14

@@ -116,7 +116,7 @@ class Inception3(nn.Module):
         self.Mixed_7c = inception_e(2048)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.dropout = nn.Dropout()
-        self.fc = nn.Linear(2048, num_classes)
+        self.fc = nn.Linear(2048, num_classes, bias=False)
         if init_weights:
             for m in self.modules():
                 if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
@@ -435,7 +435,7 @@ class InceptionAux(nn.Module):
         self.conv0 = conv_block(in_channels, 128, kernel_size=1)
         self.conv1 = conv_block(128, 768, kernel_size=5)
         self.conv1.stddev = 0.01  # type: ignore[assignment]
-        self.fc = nn.Linear(768, num_classes)
+        self.fc = nn.Linear(768, num_classes, bias=False)
         self.fc.stddev = 0.001  # type: ignore[assignment]
 
     def forward(self, x: Tensor) -> Tensor:

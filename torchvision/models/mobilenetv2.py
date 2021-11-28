@@ -150,7 +150,7 @@ class MobileNetV2(nn.Module):
         # building classifier
         self.classifier = nn.Sequential(
             nn.Dropout(0.2),
-            nn.Linear(self.last_channel, num_classes),
+            nn.Linear(self.last_channel, num_classes, bias=False),
         )
 
         # weight initialization
@@ -164,7 +164,7 @@ class MobileNetV2(nn.Module):
                 nn.init.zeros_(m.bias)
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, 0, 0.01)
-                nn.init.zeros_(m.bias)
+                # nn.init.zeros_(m.bias)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         # This exists since TorchScript doesn't support inheritance, so the superclass method

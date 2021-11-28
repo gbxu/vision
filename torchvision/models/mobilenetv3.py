@@ -147,10 +147,10 @@ class MobileNetV3(nn.Module):
         self.features = nn.Sequential(*layers)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.classifier = nn.Sequential(
-            nn.Linear(lastconv_output_channels, last_channel),
+            nn.Linear(lastconv_output_channels, last_channel, bias=False),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.2, inplace=True),
-            nn.Linear(last_channel, num_classes),
+            nn.Linear(last_channel, num_classes, bias=False),
         )
 
         for m in self.modules():
@@ -163,7 +163,7 @@ class MobileNetV3(nn.Module):
                 nn.init.zeros_(m.bias)
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, 0, 0.01)
-                nn.init.zeros_(m.bias)
+                # nn.init.zeros_(m.bias)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)

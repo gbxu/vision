@@ -200,7 +200,7 @@ class DenseNet(nn.Module):
         self.features.add_module('norm5', nn.BatchNorm2d(num_features))
 
         # Linear layer
-        self.classifier = nn.Linear(num_features, num_classes)
+        self.classifier = nn.Linear(num_features, num_classes, bias=False)
 
         # Official init from torch repo.
         for m in self.modules():
@@ -209,8 +209,8 @@ class DenseNet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                nn.init.constant_(m.bias, 0)
+            # elif isinstance(m, nn.Linear):
+            #     nn.init.constant_(m.bias, 0)
 
     def forward(self, x: Tensor) -> Tensor:
         features = self.features(x)

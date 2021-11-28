@@ -242,7 +242,7 @@ class VideoResNet(nn.Module):
         self.layer4 = self._make_layer(block, conv_makers[3], 512, layers[3], stride=2)
 
         self.avgpool = nn.AdaptiveAvgPool3d((1, 1, 1))
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
+        self.fc = nn.Linear(512 * block.expansion, num_classes, bias=False)
 
         # init weights
         self._initialize_weights()
@@ -305,7 +305,7 @@ class VideoResNet(nn.Module):
                 nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, 0, 0.01)
-                nn.init.constant_(m.bias, 0)
+                # nn.init.constant_(m.bias, 0)
 
 
 def _video_resnet(arch: str, pretrained: bool = False, progress: bool = True, **kwargs: Any) -> VideoResNet:

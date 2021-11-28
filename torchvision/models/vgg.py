@@ -34,13 +34,13 @@ class VGG(nn.Module):
         self.features = features
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
         self.classifier = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 4096),
+            nn.Linear(512 * 7 * 7, 4096, bias=False),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, 4096),
+            nn.Linear(4096, 4096, bias=False),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, num_classes),
+            nn.Linear(4096, num_classes, bias=False),
         )
         if init_weights:
             self._initialize_weights()
@@ -63,7 +63,7 @@ class VGG(nn.Module):
                 nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, 0, 0.01)
-                nn.init.constant_(m.bias, 0)
+                # nn.init.constant_(m.bias, 0)
 
 
 def make_layers(cfg: List[Union[str, int]], batch_norm: bool = False) -> nn.Sequential:
