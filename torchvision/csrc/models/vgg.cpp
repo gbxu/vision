@@ -16,7 +16,7 @@ torch::nn::Sequential makeLayers(
       seq->push_back(torch::nn::Functional(modelsimpl::avg_pool2d, 2, 2));
     else {
       seq->push_back(torch::nn::Conv2d(
-          torch::nn::Conv2dOptions(channels, V, 3).padding(1)));
+          torch::nn::Conv2dOptions(channels, V, 3).padding(1).bias(false)));
 
       if (batch_norm)
         // seq->push_back(torch::nn::BatchNorm2d(V));

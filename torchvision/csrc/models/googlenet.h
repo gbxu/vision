@@ -11,7 +11,7 @@ struct VISION_API BasicConv2dImpl : torch::nn::Module {
   torch::nn::Conv2d conv{nullptr};
   torch::nn::BatchNorm2d bn{nullptr};
 
-  explicit BasicConv2dImpl(torch::nn::Conv2dOptions options);
+  explicit BasicConv2dImpl(torch::nn::Conv2dOptions options.bias(false));
 
   torch::Tensor forward(torch::Tensor x);
 };

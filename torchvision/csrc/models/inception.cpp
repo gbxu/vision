@@ -35,13 +35,13 @@ torch::Tensor BasicConv2dImpl::forward(torch::Tensor x) {
 }
 
 InceptionAImpl::InceptionAImpl(int64_t in_channels, int64_t pool_features)
-    : branch1x1(Options(in_channels, 64, 1)),
-      branch5x5_1(Options(in_channels, 48, 1)),
-      branch5x5_2(Options(48, 64, 5).padding(2)),
-      branch3x3dbl_1(Options(in_channels, 64, 1)),
-      branch3x3dbl_2(Options(64, 96, 3).padding(1)),
-      branch3x3dbl_3(Options(96, 96, 3).padding(1)),
-      branch_pool(Options(in_channels, pool_features, 1)) {
+    : branch1x1(Options(in_channels, 64, 1).bias(false)),
+      branch5x5_1(Options(in_channels, 48, 1).bias(false)),
+      branch5x5_2(Options(48, 64, 5).padding(2).bias(false)),
+      branch3x3dbl_1(Options(in_channels, 64, 1).bias(false)),
+      branch3x3dbl_2(Options(64, 96, 3).padding(1).bias(false)),
+      branch3x3dbl_3(Options(96, 96, 3).padding(1).bias(false)),
+      branch_pool(Options(in_channels, pool_features, 1).bias(false)) {
   register_module("branch1x1", branch1x1);
   register_module("branch5x5_1", branch5x5_1);
   register_module("branch5x5_2", branch5x5_2);
@@ -68,10 +68,10 @@ torch::Tensor InceptionAImpl::forward(const torch::Tensor& x) {
 }
 
 InceptionBImpl::InceptionBImpl(int64_t in_channels)
-    : branch3x3(Options(in_channels, 384, 3).stride(2)),
-      branch3x3dbl_1(Options(in_channels, 64, 1)),
-      branch3x3dbl_2(Options(64, 96, 3).padding(1)),
-      branch3x3dbl_3(Options(96, 96, 3).stride(2)) {
+    : branch3x3(Options(in_channels, 384, 3).stride(2).bias(false)),
+      branch3x3dbl_1(Options(in_channels, 64, 1).bias(false)),
+      branch3x3dbl_2(Options(64, 96, 3).padding(1).bias(false)),
+      branch3x3dbl_3(Options(96, 96, 3).stride(2).bias(false)) {
   register_module("branch3x3", branch3x3);
   register_module("branch3x3dbl_1", branch3x3dbl_1);
   register_module("branch3x3dbl_2", branch3x3dbl_2);
@@ -90,20 +90,20 @@ torch::Tensor InceptionBImpl::forward(const torch::Tensor& x) {
 }
 
 InceptionCImpl::InceptionCImpl(int64_t in_channels, int64_t channels_7x7) {
-  branch1x1 = BasicConv2d(Options(in_channels, 192, 1));
+  branch1x1 = BasicConv2d(Options(in_channels, 192, 1).bias(false));
 
   auto c7 = channels_7x7;
-  branch7x7_1 = BasicConv2d(Options(in_channels, c7, 1));
-  branch7x7_2 = BasicConv2d(Options(c7, c7, {1, 7}).padding({0, 3}));
-  branch7x7_3 = BasicConv2d(Options(c7, 192, {7, 1}).padding({3, 0}));
+  branch7x7_1 = BasicConv2d(Options(in_channels, c7, 1).bias(false));
+  branch7x7_2 = BasicConv2d(Options(c7, c7, {1, 7}).padding({0, 3}).bias(false));
+  branch7x7_3 = BasicConv2d(Options(c7, 192, {7, 1}).padding({3, 0}).bias(false));
 
-  branch7x7dbl_1 = BasicConv2d(Options(in_channels, c7, 1));
-  branch7x7dbl_2 = BasicConv2d(Options(c7, c7, {7, 1}).padding({3, 0}));
-  branch7x7dbl_3 = BasicConv2d(Options(c7, c7, {1, 7}).padding({0, 3}));
-  branch7x7dbl_4 = BasicConv2d(Options(c7, c7, {7, 1}).padding({3, 0}));
-  branch7x7dbl_5 = BasicConv2d(Options(c7, 192, {1, 7}).padding({0, 3}));
+  branch7x7dbl_1 = BasicConv2d(Options(in_channels, c7, 1)).bias(false);
+  branch7x7dbl_2 = BasicConv2d(Options(c7, c7, {7, 1}).padding({3, 0}).bias(false));
+  branch7x7dbl_3 = BasicConv2d(Options(c7, c7, {1, 7}).padding({0, 3}).bias(false));
+  branch7x7dbl_4 = BasicConv2d(Options(c7, c7, {7, 1}).padding({3, 0}).bias(false));
+  branch7x7dbl_5 = BasicConv2d(Options(c7, 192, {1, 7}).padding({0, 3}).bias(false));
 
-  branch_pool = BasicConv2d(Options(in_channels, 192, 1));
+  branch_pool = BasicConv2d(Options(in_channels, 192, 1).bias(false));
 
   register_module("branch1x1", branch1x1);
   register_module("branch7x7_1", branch7x7_1);
@@ -137,12 +137,12 @@ torch::Tensor InceptionCImpl::forward(const torch::Tensor& x) {
 }
 
 InceptionDImpl::InceptionDImpl(int64_t in_channels)
-    : branch3x3_1(Options(in_channels, 192, 1)),
-      branch3x3_2(Options(192, 320, 3).stride(2)),
-      branch7x7x3_1(Options(in_channels, 192, 1)),
-      branch7x7x3_2(Options(192, 192, {1, 7}).padding({0, 3})),
-      branch7x7x3_3(Options(192, 192, {7, 1}).padding({3, 0})),
-      branch7x7x3_4(Options(192, 192, 3).stride(2))
+    : branch3x3_1(Options(in_channels, 192, 1).bias(false)),
+      branch3x3_2(Options(192, 320, 3).stride(2).bias(false)),
+      branch7x7x3_1(Options(in_channels, 192, 1).bias(false)),
+      branch7x7x3_2(Options(192, 192, {1, 7}).padding({0, 3}).bias(false)),
+      branch7x7x3_3(Options(192, 192, {7, 1}).padding({3, 0}).bias(false)),
+      branch7x7x3_4(Options(192, 192, 3).stride(2).bias(false))
 
 {
   register_module("branch3x3_1", branch3x3_1);
@@ -167,15 +167,15 @@ torch::Tensor InceptionDImpl::forward(const torch::Tensor& x) {
 }
 
 InceptionEImpl::InceptionEImpl(int64_t in_channels)
-    : branch1x1(Options(in_channels, 320, 1)),
-      branch3x3_1(Options(in_channels, 384, 1)),
-      branch3x3_2a(Options(384, 384, {1, 3}).padding({0, 1})),
-      branch3x3_2b(Options(384, 384, {3, 1}).padding({1, 0})),
-      branch3x3dbl_1(Options(in_channels, 448, 1)),
-      branch3x3dbl_2(Options(448, 384, 3).padding(1)),
-      branch3x3dbl_3a(Options(384, 384, {1, 3}).padding({0, 1})),
-      branch3x3dbl_3b(Options(384, 384, {3, 1}).padding({1, 0})),
-      branch_pool(Options(in_channels, 192, 1)) {
+    : branch1x1(Options(in_channels, 320, 1).bias(false)),
+      branch3x3_1(Options(in_channels, 384, 1).bias(false)),
+      branch3x3_2a(Options(384, 384, {1, 3}).padding({0, 1}).bias(false)),
+      branch3x3_2b(Options(384, 384, {3, 1}).padding({1, 0}).bias(false)),
+      branch3x3dbl_1(Options(in_channels, 448, 1).bias(false)),
+      branch3x3dbl_2(Options(448, 384, 3).padding(1).bias(false)),
+      branch3x3dbl_3a(Options(384, 384, {1, 3}).padding({0, 1}).bias(false)),
+      branch3x3dbl_3b(Options(384, 384, {3, 1}).padding({1, 0}).bias(false)),
+      branch_pool(Options(in_channels, 192, 1).bias(false)) {
   register_module("branch1x1", branch1x1);
   register_module("branch3x3_1", branch3x3_1);
   register_module("branch3x3_2a", branch3x3_2a);
@@ -212,8 +212,8 @@ torch::Tensor InceptionEImpl::forward(const torch::Tensor& x) {
 }
 
 InceptionAuxImpl::InceptionAuxImpl(int64_t in_channels, int64_t num_classes)
-    : conv0(BasicConv2d(Options(in_channels, 128, 1))),
-      conv1(BasicConv2d(Options(128, 768, 5), 0.01)),
+    : conv0(BasicConv2d(Options(in_channels, 128, 1).bias(false))),
+      conv1(BasicConv2d(Options(128, 768, 5), 0.01).bias(false)),
       fc(768, num_classes) {
   torch::nn::init::normal_(
       fc->weight,
@@ -249,11 +249,11 @@ InceptionV3Impl::InceptionV3Impl(
     bool aux_logits,
     bool transform_input)
     : aux_logits(aux_logits), transform_input(transform_input) {
-  Conv2d_1a_3x3 = _inceptionimpl::BasicConv2d(Options(3, 32, 3).stride(2));
-  Conv2d_2a_3x3 = _inceptionimpl::BasicConv2d(Options(32, 32, 3));
-  Conv2d_2b_3x3 = _inceptionimpl::BasicConv2d(Options(32, 64, 3).padding(1));
-  Conv2d_3b_1x1 = _inceptionimpl::BasicConv2d(Options(64, 80, 1));
-  Conv2d_4a_3x3 = _inceptionimpl::BasicConv2d(Options(80, 192, 3));
+  Conv2d_1a_3x3 = _inceptionimpl::BasicConv2d(Options(3, 32, 3).stride(2).bias(false));
+  Conv2d_2a_3x3 = _inceptionimpl::BasicConv2d(Options(32, 32, 3).bias(false));
+  Conv2d_2b_3x3 = _inceptionimpl::BasicConv2d(Options(32, 64, 3).padding(1).bias(false));
+  Conv2d_3b_1x1 = _inceptionimpl::BasicConv2d(Options(64, 80, 1).bias(false));
+  Conv2d_4a_3x3 = _inceptionimpl::BasicConv2d(Options(80, 192, 3).bias(false));
 
   Mixed_5b = _inceptionimpl::InceptionA(192, 32);
   Mixed_5c = _inceptionimpl::InceptionA(256, 64);

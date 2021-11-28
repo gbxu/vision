@@ -7,17 +7,17 @@ namespace models {
 AlexNetImpl::AlexNetImpl(int64_t num_classes) {
   features = torch::nn::Sequential(
       torch::nn::Conv2d(
-          torch::nn::Conv2dOptions(3, 64, 11).stride(4).padding(2)),
+          torch::nn::Conv2dOptions(3, 64, 11).stride(4).padding(2).bias(false)),
       torch::nn::Functional(modelsimpl::relu_),
       torch::nn::Functional(modelsimpl::avg_pool2d, 3, 2),
-      torch::nn::Conv2d(torch::nn::Conv2dOptions(64, 192, 5).padding(2)),
+      torch::nn::Conv2d(torch::nn::Conv2dOptions(64, 192, 5).padding(2).bias(false)),
       torch::nn::Functional(modelsimpl::relu_),
       torch::nn::Functional(modelsimpl::avg_pool2d, 3, 2),
-      torch::nn::Conv2d(torch::nn::Conv2dOptions(192, 384, 3).padding(1)),
+      torch::nn::Conv2d(torch::nn::Conv2dOptions(192, 384, 3).padding(1).bias(false)),
       torch::nn::Functional(modelsimpl::relu_),
-      torch::nn::Conv2d(torch::nn::Conv2dOptions(384, 256, 3).padding(1)),
+      torch::nn::Conv2d(torch::nn::Conv2dOptions(384, 256, 3).padding(1).bias(false)),
       torch::nn::Functional(modelsimpl::relu_),
-      torch::nn::Conv2d(torch::nn::Conv2dOptions(256, 256, 3).padding(1)),
+      torch::nn::Conv2d(torch::nn::Conv2dOptions(256, 256, 3).padding(1).bias(false)),
       torch::nn::Functional(modelsimpl::relu_),
       torch::nn::Functional(modelsimpl::avg_pool2d, 3, 2));
 

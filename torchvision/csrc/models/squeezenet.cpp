@@ -12,11 +12,11 @@ struct Fire : torch::nn::Module {
       int64_t squeeze_planes,
       int64_t expand1x1_planes,
       int64_t expand3x3_planes)
-      : squeeze(torch::nn::Conv2dOptions(inplanes, squeeze_planes, 1)),
+      : squeeze(torch::nn::Conv2dOptions(inplanes, squeeze_planes, 1).bias(false)),
         expand1x1(
-            torch::nn::Conv2dOptions(squeeze_planes, expand1x1_planes, 1)),
+            torch::nn::Conv2dOptions(squeeze_planes, expand1x1_planes, 1).bias(false)),
         expand3x3(torch::nn::Conv2dOptions(squeeze_planes, expand3x3_planes, 3)
-                      .padding(1)) {
+                      .padding(1).bias(false)) {
     register_module("squeeze", squeeze);
     register_module("expand1x1", expand1x1);
     register_module("expand3x3", expand3x3);
@@ -35,7 +35,7 @@ SqueezeNetImpl::SqueezeNetImpl(double version, int64_t num_classes)
     : num_classes(num_classes) {
   if (modelsimpl::double_compare(version, 1.0)) {
     features = torch::nn::Sequential(
-        torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 96, 7).stride(2)),
+        torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 96, 7).stride(2).bias(false)),
         torch::nn::Functional(modelsimpl::relu_),
         torch::nn::Functional(torch::avg_pool2d, 3, 2, 0, 1, true),
         Fire(96, 16, 64, 64),
@@ -50,7 +50,7 @@ SqueezeNetImpl::SqueezeNetImpl(double version, int64_t num_classes)
         Fire(512, 64, 256, 256));
   } else if (modelsimpl::double_compare(version, 1.1)) {
     features = torch::nn::Sequential(
-        torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 64, 3).stride(2)),
+        torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 64, 3).stride(2).bias(false)),
         torch::nn::Functional(modelsimpl::relu_),
         torch::nn::Functional(torch::avg_pool2d, 3, 2, 0, 1, true),
         Fire(64, 16, 64, 64),
@@ -72,7 +72,7 @@ SqueezeNetImpl::SqueezeNetImpl(double version, int64_t num_classes)
 
   // Final convolution is initialized differently from the rest
   auto final_conv =
-      torch::nn::Conv2d(torch::nn::Conv2dOptions(512, num_classes, 1));
+      torch::nn::Conv2d(torch::nn::Conv2dOptions(512, num_classes, 1).bias(false));
 
   classifier = torch::nn::Sequential(
       torch::nn::Dropout(0.5),

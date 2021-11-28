@@ -32,17 +32,17 @@ InceptionImpl::InceptionImpl(
     int64_t ch5x5red,
     int64_t ch5x5,
     int64_t pool_proj) {
-  branch1 = BasicConv2d(Options(in_channels, ch1x1, 1));
+  branch1 = BasicConv2d(Options(in_channels, ch1x1, 1).bias(false));
 
-  branch2->push_back(BasicConv2d(Options(in_channels, ch3x3red, 1)));
-  branch2->push_back(BasicConv2d(Options(ch3x3red, ch3x3, 3).padding(1)));
+  branch2->push_back(BasicConv2d(Options(in_channels, ch3x3red, 1).bias(false)));
+  branch2->push_back(BasicConv2d(Options(ch3x3red, ch3x3, 3).padding(1).bias(false)));
 
-  branch3->push_back(BasicConv2d(Options(in_channels, ch5x5red, 1)));
-  branch3->push_back(BasicConv2d(Options(ch5x5red, ch5x5, 3).padding(1)));
+  branch3->push_back(BasicConv2d(Options(in_channels, ch5x5red, 1).bias(false)));
+  branch3->push_back(BasicConv2d(Options(ch5x5red, ch5x5, 3).padding(1).bias(false)));
 
   branch4->push_back(
       torch::nn::Functional(torch::avg_pool2d, 3, 1, 1, 1, true));
-  branch4->push_back(BasicConv2d(Options(in_channels, pool_proj, 1)));
+  branch4->push_back(BasicConv2d(Options(in_channels, pool_proj, 1).bias(false)));
 
   register_module("branch1", branch1);
   register_module("branch2", branch2);
@@ -60,7 +60,7 @@ torch::Tensor InceptionImpl::forward(torch::Tensor x) {
 }
 
 InceptionAuxImpl::InceptionAuxImpl(int64_t in_channels, int64_t num_classes) {
-  conv = BasicConv2d(Options(in_channels, 128, 1));
+  conv = BasicConv2d(Options(in_channels, 128, 1).bias(false));
   fc1 = torch::nn::Linear(2048, 1024);
   fc2 = torch::nn::Linear(1024, num_classes);
 
@@ -97,9 +97,9 @@ GoogLeNetImpl::GoogLeNetImpl(
   this->aux_logits = aux_logits;
   this->transform_input = transform_input;
 
-  conv1 = _googlenetimpl::BasicConv2d(Options(3, 64, 7).stride(2).padding(3));
-  conv2 = _googlenetimpl::BasicConv2d(Options(64, 64, 1));
-  conv3 = _googlenetimpl::BasicConv2d(Options(64, 192, 3).padding(1));
+  conv1 = _googlenetimpl::BasicConv2d(Options(3, 64, 7).stride(2).padding(3).bias(false));
+  conv2 = _googlenetimpl::BasicConv2d(Options(64, 64, 1).bias(false));
+  conv3 = _googlenetimpl::BasicConv2d(Options(64, 192, 3).padding(1).bias(false));
 
   inception3a = _googlenetimpl::Inception(192, 64, 96, 128, 16, 32, 32);
   inception3b = _googlenetimpl::Inception(256, 128, 128, 192, 32, 96, 64);
