@@ -40,3 +40,7 @@ xcuserdata/
 # direnv
 .direnv
 .envrc
+
+# codegen
+codegen_workspace/codegen
+codegen_workspace/data
