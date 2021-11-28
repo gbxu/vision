@@ -79,8 +79,8 @@ class FeaturePyramidNetwork(nn.Module):
         for in_channels in in_channels_list:
             if in_channels == 0:
                 raise ValueError("in_channels=0 is currently not supported")
-            inner_block_module = nn.Conv2d(in_channels, out_channels, 1)
-            layer_block_module = nn.Conv2d(out_channels, out_channels, 3, padding=1)
+            inner_block_module = nn.Conv2d(in_channels, out_channels, 1, bias=False)
+            layer_block_module = nn.Conv2d(out_channels, out_channels, 3, padding=1, bias=False)
             self.inner_blocks.append(inner_block_module)
             self.layer_blocks.append(layer_block_module)
 
@@ -182,8 +182,8 @@ class LastLevelP6P7(ExtraFPNBlock):
     """
     def __init__(self, in_channels: int, out_channels: int):
         super(LastLevelP6P7, self).__init__()
-        self.p6 = nn.Conv2d(in_channels, out_channels, 3, 2, 1)
-        self.p7 = nn.Conv2d(out_channels, out_channels, 3, 2, 1)
+        self.p6 = nn.Conv2d(in_channels, out_channels, 3, 2, 1, bias=False)
+        self.p7 = nn.Conv2d(out_channels, out_channels, 3, 2, 1, bias=False)
         for module in [self.p6, self.p7]:
             nn.init.kaiming_uniform_(module.weight, a=1)
             nn.init.constant_(module.bias, 0)

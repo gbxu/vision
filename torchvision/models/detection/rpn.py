@@ -38,11 +38,11 @@ class RPNHead(nn.Module):
     def __init__(self, in_channels, num_anchors):
         super(RPNHead, self).__init__()
         self.conv = nn.Conv2d(
-            in_channels, in_channels, kernel_size=3, stride=1, padding=1
+            in_channels, in_channels, kernel_size=3, stride=1, padding=1, bias=False
         )
-        self.cls_logits = nn.Conv2d(in_channels, num_anchors, kernel_size=1, stride=1)
+        self.cls_logits = nn.Conv2d(in_channels, num_anchors, kernel_size=1, stride=1, bias=False)
         self.bbox_pred = nn.Conv2d(
-            in_channels, num_anchors * 4, kernel_size=1, stride=1
+            in_channels, num_anchors * 4, kernel_size=1, stride=1, bias=False
         )
 
         for layer in self.children():

@@ -116,7 +116,7 @@ class ConvNormActivation(torch.nn.Sequential):
         if padding is None:
             padding = (kernel_size - 1) // 2 * dilation
         layers = [torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding,
-                                  dilation=dilation, groups=groups, bias=norm_layer is None)]
+                                  dilation=dilation, groups=groups, bias=False)]
         if norm_layer is not None:
             layers.append(norm_layer(out_channels))
         if activation_layer is not None:
@@ -135,8 +135,8 @@ class SqueezeExcitation(torch.nn.Module):
     ) -> None:
         super().__init__()
         self.avgpool = torch.nn.AdaptiveAvgPool2d(1)
-        self.fc1 = torch.nn.Conv2d(input_channels, squeeze_channels, 1)
-        self.fc2 = torch.nn.Conv2d(squeeze_channels, input_channels, 1)
+        self.fc1 = torch.nn.Conv2d(input_channels, squeeze_channels, 1, bias=False)
+        self.fc2 = torch.nn.Conv2d(squeeze_channels, input_channels, 1, bias=False)
         self.activation = activation()
         self.scale_activation = scale_activation()
 

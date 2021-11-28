@@ -32,7 +32,7 @@ def _prediction_block(in_channels: int, out_channels: int, kernel_size: int,
                            norm_layer=norm_layer, activation_layer=nn.ReLU6),
 
         # 1x1 projetion to output channels
-        nn.Conv2d(in_channels, out_channels, 1)
+        nn.Conv2d(in_channels, out_channels, 1, bias=False)
     )
 
 

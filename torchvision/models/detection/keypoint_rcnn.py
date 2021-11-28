@@ -227,7 +227,7 @@ class KeypointRCNNHeads(nn.Sequential):
         d = []
         next_feature = in_channels
         for out_channels in layers:
-            d.append(nn.Conv2d(next_feature, out_channels, 3, stride=1, padding=1))
+            d.append(nn.Conv2d(next_feature, out_channels, 3, stride=1, padding=1, bias=False))
             d.append(nn.ReLU(inplace=True))
             next_feature = out_channels
         super(KeypointRCNNHeads, self).__init__(*d)

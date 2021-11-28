@@ -91,7 +91,7 @@ class SSDClassificationHead(SSDScoringHead):
     def __init__(self, in_channels: List[int], num_anchors: List[int], num_classes: int):
         cls_logits = nn.ModuleList()
         for channels, anchors in zip(in_channels, num_anchors):
-            cls_logits.append(nn.Conv2d(channels, num_classes * anchors, kernel_size=3, padding=1))
+            cls_logits.append(nn.Conv2d(channels, num_classes * anchors, kernel_size=3, padding=1, bias=False))
         _xavier_init(cls_logits)
         super().__init__(cls_logits, num_classes)
 
@@ -100,7 +100,7 @@ class SSDRegressionHead(SSDScoringHead):
     def __init__(self, in_channels: List[int], num_anchors: List[int]):
         bbox_reg = nn.ModuleList()
         for channels, anchors in zip(in_channels, num_anchors):
-            bbox_reg.append(nn.Conv2d(channels, 4 * anchors, kernel_size=3, padding=1))
+            bbox_reg.append(nn.Conv2d(channels, 4 * anchors, kernel_size=3, padding=1, bias=False))
         _xavier_init(bbox_reg)
         super().__init__(bbox_reg, 4)
 
@@ -437,43 +437,43 @@ class SSDFeatureExtractorVGG(nn.Module):
             nn.Sequential(
                 nn.Conv2d(1024, 256, kernel_size=1),
                 nn.ReLU(inplace=True),
-                nn.Conv2d(256, 512, kernel_size=3, padding=1, stride=2),  # conv8_2
+                nn.Conv2d(256, 512, kernel_size=3, padding=1, stride=2, bias=False),  # conv8_2
                 nn.ReLU(inplace=True),
             ),
             nn.Sequential(
-                nn.Conv2d(512, 128, kernel_size=1),
+                nn.Conv2d(512, 128, kernel_size=1, bias=False),
                 nn.ReLU(inplace=True),
-                nn.Conv2d(128, 256, kernel_size=3, padding=1, stride=2),  # conv9_2
-                nn.ReLU(inplace=True),
-            ),
-            nn.Sequential(
-                nn.Conv2d(256, 128, kernel_size=1),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(128, 256, kernel_size=3),  # conv10_2
+                nn.Conv2d(128, 256, kernel_size=3, padding=1, stride=2, bias=False),  # conv9_2
                 nn.ReLU(inplace=True),
             ),
             nn.Sequential(
-                nn.Conv2d(256, 128, kernel_size=1),
+                nn.Conv2d(256, 128, kernel_size=1, bias=False),
                 nn.ReLU(inplace=True),
-                nn.Conv2d(128, 256, kernel_size=3),  # conv11_2
+                nn.Conv2d(128, 256, kernel_size=3, bias=False),  # conv10_2
+                nn.ReLU(inplace=True),
+            ),
+            nn.Sequential(
+                nn.Conv2d(256, 128, kernel_size=1, bias=False),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(128, 256, kernel_size=3, bias=False),  # conv11_2
                 nn.ReLU(inplace=True),
             )
         ])
         if highres:
             # Additional layers for the SSD512 case. See page 11, footernote 5.
             extra.append(nn.Sequential(
-                nn.Conv2d(256, 128, kernel_size=1),
+                nn.Conv2d(256, 128, kernel_size=1, bias=False),
                 nn.ReLU(inplace=True),
-                nn.Conv2d(128, 256, kernel_size=4),  # conv12_2
+                nn.Conv2d(128, 256, kernel_size=4, bias=False),  # conv12_2
                 nn.ReLU(inplace=True),
             ))
         _xavier_init(extra)
 
         fc = nn.Sequential(
             nn.AvgPool2d(kernel_size=3, stride=1, padding=1, ceil_mode=False, count_include_pad=False),  # add modified maxpool5
-            nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=3, padding=6, dilation=6),  # FC6 with atrous
+            nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=3, padding=6, dilation=6, bias=False),  # FC6 with atrous
             nn.ReLU(inplace=True),
-            nn.Conv2d(in_channels=1024, out_channels=1024, kernel_size=1),  # FC7
+            nn.Conv2d(in_channels=1024, out_channels=1024, kernel_size=1, bias=False),  # FC7
             nn.ReLU(inplace=True)
         )
         _xavier_init(fc)

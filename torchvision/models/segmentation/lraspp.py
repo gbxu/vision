@@ -67,8 +67,8 @@ class LRASPPHead(nn.Module):
             nn.Conv2d(high_channels, inter_channels, 1, bias=False),
             nn.Sigmoid(),
         )
-        self.low_classifier = nn.Conv2d(low_channels, num_classes, 1)
-        self.high_classifier = nn.Conv2d(inter_channels, num_classes, 1)
+        self.low_classifier = nn.Conv2d(low_channels, num_classes, 1, bias=False)
+        self.high_classifier = nn.Conv2d(inter_channels, num_classes, 1, bias=False)
 
     def forward(self, input: Dict[str, Tensor]) -> Tensor:
         low = input["low"]

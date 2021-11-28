@@ -75,7 +75,7 @@ class RetinaNetClassificationHead(nn.Module):
 
         conv = []
         for _ in range(4):
-            conv.append(nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=1, padding=1))
+            conv.append(nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=1, padding=1, bias=False))
             conv.append(nn.ReLU())
         self.conv = nn.Sequential(*conv)
 
@@ -84,7 +84,7 @@ class RetinaNetClassificationHead(nn.Module):
                 torch.nn.init.normal_(layer.weight, std=0.01)
                 torch.nn.init.constant_(layer.bias, 0)
 
-        self.cls_logits = nn.Conv2d(in_channels, num_anchors * num_classes, kernel_size=3, stride=1, padding=1)
+        self.cls_logits = nn.Conv2d(in_channels, num_anchors * num_classes, kernel_size=3, stride=1, padding=1, bias=False)
         torch.nn.init.normal_(self.cls_logits.weight, std=0.01)
         torch.nn.init.constant_(self.cls_logits.bias, -math.log((1 - prior_probability) / prior_probability))
 
@@ -162,11 +162,11 @@ class RetinaNetRegressionHead(nn.Module):
 
         conv = []
         for _ in range(4):
-            conv.append(nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=1, padding=1))
+            conv.append(nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=1, padding=1, bias=False))
             conv.append(nn.ReLU())
         self.conv = nn.Sequential(*conv)
 
-        self.bbox_reg = nn.Conv2d(in_channels, num_anchors * 4, kernel_size=3, stride=1, padding=1)
+        self.bbox_reg = nn.Conv2d(in_channels, num_anchors * 4, kernel_size=3, stride=1, padding=1, bias=False)
         torch.nn.init.normal_(self.bbox_reg.weight, std=0.01)
         torch.nn.init.zeros_(self.bbox_reg.bias)
 

@@ -173,7 +173,7 @@ def mobilenet_backbone(
         m = nn.Sequential(
             backbone,
             # depthwise linear combination of channels to reduce their size
-            nn.Conv2d(backbone[-1].out_channels, out_channels, 1),
+            nn.Conv2d(backbone[-1].out_channels, out_channels, 1, bias=False),
         )
         m.out_channels = out_channels
         return m

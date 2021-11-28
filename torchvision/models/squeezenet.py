@@ -23,13 +23,13 @@ class Fire(nn.Module):
     ) -> None:
         super(Fire, self).__init__()
         self.inplanes = inplanes
-        self.squeeze = nn.Conv2d(inplanes, squeeze_planes, kernel_size=1)
+        self.squeeze = nn.Conv2d(inplanes, squeeze_planes, kernel_size=1, bias=False)
         self.squeeze_activation = nn.ReLU(inplace=True)
         self.expand1x1 = nn.Conv2d(squeeze_planes, expand1x1_planes,
-                                   kernel_size=1)
+                                   kernel_size=1, bias=False)
         self.expand1x1_activation = nn.ReLU(inplace=True)
         self.expand3x3 = nn.Conv2d(squeeze_planes, expand3x3_planes,
-                                   kernel_size=3, padding=1)
+                                   kernel_size=3, padding=1, bias=False)
         self.expand3x3_activation = nn.ReLU(inplace=True)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -51,7 +51,7 @@ class SqueezeNet(nn.Module):
         self.num_classes = num_classes
         if version == '1_0':
             self.features = nn.Sequential(
-                nn.Conv2d(3, 96, kernel_size=7, stride=2),
+                nn.Conv2d(3, 96, kernel_size=7, stride=2, bias=False),
                 nn.ReLU(inplace=True),
                 nn.AvgPool2d(kernel_size=3, stride=2, ceil_mode=True, count_include_pad=False),
                 Fire(96, 16, 64, 64),
@@ -67,7 +67,7 @@ class SqueezeNet(nn.Module):
             )
         elif version == '1_1':
             self.features = nn.Sequential(
-                nn.Conv2d(3, 64, kernel_size=3, stride=2),
+                nn.Conv2d(3, 64, kernel_size=3, stride=2, bias=False),
                 nn.ReLU(inplace=True),
                 nn.AvgPool2d(kernel_size=3, stride=2, ceil_mode=True, count_include_pad=False),
                 Fire(64, 16, 64, 64),
@@ -89,7 +89,7 @@ class SqueezeNet(nn.Module):
                              "1_0 or 1_1 expected".format(version=version))
 
         # Final convolution is initialized differently from the rest
-        final_conv = nn.Conv2d(512, self.num_classes, kernel_size=1)
+        final_conv = nn.Conv2d(512, self.num_classes, kernel_size=1, bias=False)
         self.classifier = nn.Sequential(
             nn.Dropout(p=0.5),
             final_conv,
