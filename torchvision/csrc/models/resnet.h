@@ -28,7 +28,7 @@ struct VISION_API BasicBlock : torch::nn::Module {
   torch::nn::Sequential downsample;
 
   torch::nn::Conv2d conv1{nullptr}, conv2{nullptr};
-  torch::nn::BatchNorm2d bn1{nullptr}, bn2{nullptr};
+  // torch::nn::BatchNorm2d bn1{nullptr}, bn2{nullptr};
 
   static int expansion;
 
@@ -51,7 +51,7 @@ struct VISION_API Bottleneck : torch::nn::Module {
   torch::nn::Sequential downsample;
 
   torch::nn::Conv2d conv1{nullptr}, conv2{nullptr}, conv3{nullptr};
-  torch::nn::BatchNorm2d bn1{nullptr}, bn2{nullptr}, bn3{nullptr};
+  // torch::nn::BatchNorm2d bn1{nullptr}, bn2{nullptr}, bn3{nullptr};
 
   static int expansion;
 
@@ -71,7 +71,7 @@ template <typename Block>
 struct ResNetImpl : torch::nn::Module {
   int64_t groups, base_width, inplanes;
   torch::nn::Conv2d conv1;
-  torch::nn::BatchNorm2d bn1;
+  // torch::nn::BatchNorm2d bn1;
   torch::nn::Sequential layer1, layer2, layer3, layer4;
   torch::nn::Linear fc;
 
@@ -126,14 +126,14 @@ ResNetImpl<Block>::ResNetImpl(
       inplanes(64),
       conv1(
           torch::nn::Conv2dOptions(3, 64, 7).stride(2).padding(3).bias(false)),
-      bn1(64),
+      // bn1(64),
       layer1(_make_layer(64, layers[0])),
       layer2(_make_layer(128, layers[1], 2)),
       layer3(_make_layer(256, layers[2], 2)),
       layer4(_make_layer(512, layers[3], 2)),
       fc(512 * Block::expansion, num_classes) {
   register_module("conv1", conv1);
-  register_module("bn1", bn1);
+  // register_module("bn1", bn1);
   register_module("fc", fc);
 
   register_module("layer1", layer1);
@@ -172,7 +172,7 @@ ResNetImpl<Block>::ResNetImpl(
 template <typename Block>
 torch::Tensor ResNetImpl<Block>::forward(torch::Tensor x) {
   x = conv1->forward(x);
-  x = bn1->forward(x).relu_();
+  // x = bn1->forward(x).relu_();
   x = torch::avg_pool2d(x, 3, 2, 1);
 
   x = layer1->forward(x);

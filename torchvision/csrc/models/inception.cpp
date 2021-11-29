@@ -13,8 +13,8 @@ BasicConv2dImpl::BasicConv2dImpl(
     double std_dev) {
   options.bias(false);
   conv = torch::nn::Conv2d(options);
-  bn = torch::nn::BatchNorm2d(
-      torch::nn::BatchNormOptions(options.out_channels()).eps(0.001));
+  // bn = torch::nn::BatchNorm2d(
+  //     torch::nn::BatchNormOptions(options.out_channels()).eps(0.001));
 
   register_module("conv", conv);
   // register_module("bn", bn);
@@ -24,13 +24,13 @@ BasicConv2dImpl::BasicConv2dImpl(
       0,
       std_dev); // Note: used instead of truncated normal initialization
 
-  torch::nn::init::constant_(bn->weight, 1);
-  torch::nn::init::constant_(bn->bias, 0);
+  // torch::nn::init::constant_(bn->weight, 1);
+  // torch::nn::init::constant_(bn->bias, 0);
 }
 
 torch::Tensor BasicConv2dImpl::forward(torch::Tensor x) {
   x = conv->forward(x);
-  x = bn->forward(x);
+  // x = bn->forward(x);
   return torch::relu_(x);
 }
 

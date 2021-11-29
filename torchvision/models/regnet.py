@@ -310,7 +310,7 @@ class RegNet(nn.Module):
         if stem_type is None:
             stem_type = SimpleStemIN
         if norm_layer is None:
-            norm_layer = nn.Identity #nn.BatchNorm2d
+            norm_layer = None #nn.BatchNorm2d
         if block_type is None:
             block_type = ResBottleneckBlock
         if activation is None:
@@ -389,7 +389,8 @@ class RegNet(nn.Module):
 
 
 def _regnet(arch: str, block_params: BlockParams, pretrained: bool, progress: bool, **kwargs: Any) -> RegNet:
-    model = RegNet(block_params, norm_layer=partial(nn.BatchNorm2d, eps=1e-05, momentum=0.1), **kwargs)
+    # model = RegNet(block_params, norm_layer=partial(nn.BatchNorm2d, eps=1e-05, momentum=0.1), **kwargs)
+    model = RegNet(block_params, **kwargs)
     if pretrained:
         if arch not in model_urls:
             raise ValueError(f"No checkpoint is available for model type {arch}")

@@ -140,14 +140,16 @@ class EfficientNet(nn.Module):
         if block is None:
             block = MBConv
 
-        if norm_layer is None:
-            norm_layer = nn.BatchNorm2d
+        # if norm_layer is None:
+        #     norm_layer = nn.BatchNorm2d
 
         layers: List[nn.Module] = []
 
         # building first layer
         firstconv_output_channels = inverted_residual_setting[0].input_channels
-        layers.append(ConvNormActivation(3, firstconv_output_channels, kernel_size=3, stride=2, norm_layer=norm_layer,
+        # layers.append(ConvNormActivation(3, firstconv_output_channels, kernel_size=3, stride=2, norm_layer=norm_layer,
+        #                                  activation_layer=nn.SiLU))
+        layers.append(ConvNormActivation(3, firstconv_output_channels, kernel_size=3, stride=2,
                                          activation_layer=nn.SiLU))
 
         # building inverted residual blocks
@@ -167,7 +169,8 @@ class EfficientNet(nn.Module):
                 # adjust stochastic depth probability based on the depth of the stage block
                 sd_prob = stochastic_depth_prob * float(stage_block_id) / total_stage_blocks
 
-                stage.append(block(block_cnf, sd_prob, norm_layer))
+                # stage.append(block(block_cnf, sd_prob, norm_layer))
+                stage.append(block(block_cnf, sd_prob, None))
                 stage_block_id += 1
 
             layers.append(nn.Sequential(*stage))
@@ -175,8 +178,10 @@ class EfficientNet(nn.Module):
         # building last several layers
         lastconv_input_channels = inverted_residual_setting[-1].out_channels
         lastconv_output_channels = 4 * lastconv_input_channels
+        # layers.append(ConvNormActivation(lastconv_input_channels, lastconv_output_channels, kernel_size=1,
+        #                                  norm_layer=norm_layer, activation_layer=nn.SiLU))
         layers.append(ConvNormActivation(lastconv_input_channels, lastconv_output_channels, kernel_size=1,
-                                         norm_layer=norm_layer, activation_layer=nn.SiLU))
+                                         activation_layer=nn.SiLU))
 
         self.features = nn.Sequential(*layers)
         self.avgpool = nn.AdaptiveAvgPool2d(1)

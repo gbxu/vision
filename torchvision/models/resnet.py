@@ -49,8 +49,8 @@ class BasicBlock(nn.Module):
         norm_layer: Optional[Callable[..., nn.Module]] = None
     ) -> None:
         super(BasicBlock, self).__init__()
-        if norm_layer is None:
-            norm_layer = nn.BatchNorm2d
+        # if norm_layer is None:
+        #     norm_layer = nn.BatchNorm2d
         if groups != 1 or base_width != 64:
             raise ValueError('BasicBlock only supports groups=1 and base_width=64')
         if dilation > 1:
@@ -104,8 +104,8 @@ class Bottleneck(nn.Module):
         norm_layer: Optional[Callable[..., nn.Module]] = None
     ) -> None:
         super(Bottleneck, self).__init__()
-        if norm_layer is None:
-            norm_layer = nn.BatchNorm2d
+        # if norm_layer is None:
+        #     norm_layer = nn.BatchNorm2d
         width = int(planes * (base_width / 64.)) * groups
         # Both self.conv2 and self.downsample layers downsample the input when stride != 1
         self.conv1 = conv1x1(inplanes, width)
@@ -155,9 +155,9 @@ class ResNet(nn.Module):
         norm_layer: Optional[Callable[..., nn.Module]] = None
     ) -> None:
         super(ResNet, self).__init__()
-        if norm_layer is None:
-            norm_layer = nn.BatchNorm2d
-        self._norm_layer = norm_layer
+        # if norm_layer is None:
+        #     norm_layer = nn.BatchNorm2d
+        # self._norm_layer = norm_layer
 
         self.inplanes = 64
         self.dilation = 1
@@ -195,16 +195,16 @@ class ResNet(nn.Module):
         # Zero-initialize the last BN in each residual branch,
         # so that the residual branch starts with zeros, and each residual block behaves like an identity.
         # This improves the model by 0.2~0.3% according to https://arxiv.org/abs/1706.02677
-        if zero_init_residual:
-            for m in self.modules():
-                if isinstance(m, Bottleneck):
-                    nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
-                elif isinstance(m, BasicBlock):
-                    nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
+        # if zero_init_residual:
+        #     for m in self.modules():
+        #         if isinstance(m, Bottleneck):
+        #             nn.init.constant_(m.bn3.weight, 0)  # type: ignore[arg-type]
+        #         elif isinstance(m, BasicBlock):
+        #             nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
 
     def _make_layer(self, block: Type[Union[BasicBlock, Bottleneck]], planes: int, blocks: int,
                     stride: int = 1, dilate: bool = False) -> nn.Sequential:
-        norm_layer = self._norm_layer
+        # norm_layer = self._norm_layer
         downsample = None
         previous_dilation = self.dilation
         if dilate:
@@ -235,7 +235,7 @@ class ResNet(nn.Module):
     def _forward_impl(self, x: Tensor) -> Tensor:
         # See note [TorchScript super()]
         x = self.conv1(x)
-        x = self.bn1(x)
+        # x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
 

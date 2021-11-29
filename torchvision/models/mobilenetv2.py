@@ -48,8 +48,8 @@ class InvertedResidual(nn.Module):
         self.stride = stride
         assert stride in [1, 2]
 
-        if norm_layer is None:
-            norm_layer = nn.BatchNorm2d
+        # if norm_layer is None:
+        #     norm_layer = nn.BatchNorm2d
 
         hidden_dim = int(round(inp * expand_ratio))
         self.use_res_connect = self.stride == 1 and inp == oup
@@ -69,7 +69,7 @@ class InvertedResidual(nn.Module):
                                activation_layer=nn.ReLU6),
             # pw-linear
             nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
-            norm_layer(oup),
+            # norm_layer(oup),
         ])
         self.conv = nn.Sequential(*layers)
         self.out_channels = oup
@@ -110,8 +110,8 @@ class MobileNetV2(nn.Module):
         if block is None:
             block = InvertedResidual
 
-        if norm_layer is None:
-            norm_layer = nn.BatchNorm2d
+        # if norm_layer is None:
+        #     norm_layer = nn.BatchNorm2d
 
         input_channel = 32
         last_channel = 1280

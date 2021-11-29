@@ -29,7 +29,7 @@ class _DenseLayer(nn.Module):
         memory_efficient: bool = False
     ) -> None:
         super(_DenseLayer, self).__init__()
-        self.norm1: nn.BatchNorm2d
+        # self.norm1: nn.BatchNorm2d
         # self.add_module('norm1', nn.BatchNorm2d(num_input_features))
         self.relu1: nn.ReLU
         self.add_module('relu1', nn.ReLU(inplace=True))
@@ -37,7 +37,7 @@ class _DenseLayer(nn.Module):
         self.add_module('conv1', nn.Conv2d(num_input_features, bn_size *
                                            growth_rate, kernel_size=1, stride=1,
                                            bias=False))
-        self.norm2: nn.BatchNorm2d
+        # self.norm2: nn.BatchNorm2d
         # self.add_module('norm2', nn.BatchNorm2d(bn_size * growth_rate))
         self.relu2: nn.ReLU
         self.add_module('relu2', nn.ReLU(inplace=True))

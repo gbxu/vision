@@ -66,8 +66,10 @@ class SSDLiteHead(nn.Module):
     def __init__(self, in_channels: List[int], num_anchors: List[int], num_classes: int,
                  norm_layer: Callable[..., nn.Module]):
         super().__init__()
-        self.classification_head = SSDLiteClassificationHead(in_channels, num_anchors, num_classes, norm_layer)
-        self.regression_head = SSDLiteRegressionHead(in_channels, num_anchors, norm_layer)
+        # self.classification_head = SSDLiteClassificationHead(in_channels, num_anchors, num_classes, norm_layer)
+        # self.regression_head = SSDLiteRegressionHead(in_channels, num_anchors, norm_layer)
+        self.classification_head = SSDLiteClassificationHead(in_channels, num_anchors, num_classes)
+        self.regression_head = SSDLiteRegressionHead(in_channels, num_anchors)
 
     def forward(self, x: List[Tensor]) -> Dict[str, Tensor]:
         return {
@@ -81,7 +83,8 @@ class SSDLiteClassificationHead(SSDScoringHead):
                  norm_layer: Callable[..., nn.Module]):
         cls_logits = nn.ModuleList()
         for channels, anchors in zip(in_channels, num_anchors):
-            cls_logits.append(_prediction_block(channels, num_classes * anchors, 3, norm_layer))
+            # cls_logits.append(_prediction_block(channels, num_classes * anchors, 3, norm_layer))
+            cls_logits.append(_prediction_block(channels, num_classes * anchors, 3))
         _normal_init(cls_logits)
         super().__init__(cls_logits, num_classes)
 
@@ -90,7 +93,8 @@ class SSDLiteRegressionHead(SSDScoringHead):
     def __init__(self, in_channels: List[int], num_anchors: List[int], norm_layer: Callable[..., nn.Module]):
         bbox_reg = nn.ModuleList()
         for channels, anchors in zip(in_channels, num_anchors):
-            bbox_reg.append(_prediction_block(channels, 4 * anchors, 3, norm_layer))
+            # bbox_reg.append(_prediction_block(channels, 4 * anchors, 3, norm_layer))
+            bbox_reg.append(_prediction_block(channels, 4 * anchors, 3))
         _normal_init(bbox_reg)
         super().__init__(bbox_reg, 4)
 
@@ -196,8 +200,8 @@ def ssdlite320_mobilenet_v3_large(pretrained: bool = False, progress: bool = Tru
     # Enable reduced tail if no pretrained backbone is selected. See Table 6 of MobileNetV3 paper.
     reduce_tail = not pretrained_backbone
 
-    if norm_layer is None:
-        norm_layer = partial(nn.BatchNorm2d, eps=0.001, momentum=0.03)
+    # if norm_layer is None:
+    #     norm_layer = partial(nn.BatchNorm2d, eps=0.001, momentum=0.03)
 
     # backbone = _mobilenet_extractor("mobilenet_v3_large", progress, pretrained_backbone, trainable_backbone_layers,
     #                                 norm_layer, reduced_tail=reduce_tail, **kwargs)

@@ -116,7 +116,7 @@ class ShuffleNetV2(nn.Module):
         output_channels = self._stage_out_channels[0]
         self.conv1 = nn.Sequential(
             nn.Conv2d(input_channels, output_channels, 3, 2, 1, bias=False),
-            nn.BatchNorm2d(output_channels),
+            # nn.BatchNorm2d(output_channels),
             nn.ReLU(inplace=True),
         )
         input_channels = output_channels
@@ -139,7 +139,7 @@ class ShuffleNetV2(nn.Module):
         output_channels = self._stage_out_channels[-1]
         self.conv5 = nn.Sequential(
             nn.Conv2d(input_channels, output_channels, 1, 1, 0, bias=False),
-            nn.BatchNorm2d(output_channels),
+            # nn.BatchNorm2d(output_channels),
             nn.ReLU(inplace=True),
         )
 

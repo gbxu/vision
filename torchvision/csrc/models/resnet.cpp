@@ -38,8 +38,8 @@ BasicBlock::BasicBlock(
   conv1 = conv3x3(inplanes, planes, stride);
   conv2 = conv3x3(planes, planes);
 
-  bn1 = torch::nn::BatchNorm2d(planes);
-  bn2 = torch::nn::BatchNorm2d(planes);
+  // bn1 = torch::nn::BatchNorm2d(planes);
+  // bn2 = torch::nn::BatchNorm2d(planes);
 
   register_module("conv1", conv1);
   register_module("conv2", conv2);
@@ -66,9 +66,9 @@ Bottleneck::Bottleneck(
   conv2 = conv3x3(width, width, stride, groups);
   conv3 = conv1x1(width, planes * expansion);
 
-  bn1 = torch::nn::BatchNorm2d(width);
-  bn2 = torch::nn::BatchNorm2d(width);
-  bn3 = torch::nn::BatchNorm2d(planes * expansion);
+  // bn1 = torch::nn::BatchNorm2d(width);
+  // bn2 = torch::nn::BatchNorm2d(width);
+  // bn3 = torch::nn::BatchNorm2d(planes * expansion);
 
   register_module("conv1", conv1);
   register_module("conv2", conv2);
@@ -86,13 +86,13 @@ torch::Tensor Bottleneck::forward(torch::Tensor X) {
   auto identity = X;
 
   auto out = conv1->forward(X);
-  out = bn1->forward(out).relu_();
+  // out = bn1->forward(out).relu_();
 
   out = conv2->forward(out);
-  out = bn2->forward(out).relu_();
+  // out = bn2->forward(out).relu_();
 
   out = conv3->forward(out);
-  out = bn3->forward(out);
+  // out = bn3->forward(out);
 
   if (!downsample.is_empty())
     identity = downsample->forward(X);
@@ -105,10 +105,10 @@ torch::Tensor BasicBlock::forward(torch::Tensor x) {
   auto identity = x;
 
   auto out = conv1->forward(x);
-  out = bn1->forward(out).relu_();
+  // out = bn1->forward(out).relu_();
 
   out = conv2->forward(out);
-  out = bn2->forward(out);
+  // out = bn2->forward(out);
 
   if (!downsample.is_empty())
     identity = downsample->forward(x);

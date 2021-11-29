@@ -131,8 +131,8 @@ class MobileNetV3(nn.Module):
         if block is None:
             block = InvertedResidual
 
-        if norm_layer is None:
-            norm_layer = partial(nn.BatchNorm2d, eps=0.001, momentum=0.01)
+        # if norm_layer is None:
+        #     norm_layer = partial(nn.BatchNorm2d, eps=0.001, momentum=0.01)
 
         layers: List[nn.Module] = []
 
