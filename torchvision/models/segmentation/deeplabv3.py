@@ -32,7 +32,7 @@ class DeepLabHead(nn.Sequential):
         super(DeepLabHead, self).__init__(
             ASPP(in_channels, [12, 24, 36]),
             nn.Conv2d(256, 256, 3, padding=1, bias=False),
-            nn.BatchNorm2d(256),
+            # nn.BatchNorm2d(256),
             nn.ReLU(),
             nn.Conv2d(256, num_classes, 1, bias=False)
         )
@@ -42,7 +42,7 @@ class ASPPConv(nn.Sequential):
     def __init__(self, in_channels: int, out_channels: int, dilation: int) -> None:
         modules = [
             nn.Conv2d(in_channels, out_channels, 3, padding=dilation, dilation=dilation, bias=False),
-            nn.BatchNorm2d(out_channels),
+            # nn.BatchNorm2d(out_channels),
             nn.ReLU()
         ]
         super(ASPPConv, self).__init__(*modules)
@@ -53,7 +53,7 @@ class ASPPPooling(nn.Sequential):
         super(ASPPPooling, self).__init__(
             nn.AdaptiveAvgPool2d(1),
             nn.Conv2d(in_channels, out_channels, 1, bias=False),
-            nn.BatchNorm2d(out_channels),
+            # nn.BatchNorm2d(out_channels),
             nn.ReLU())
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -69,7 +69,7 @@ class ASPP(nn.Module):
         modules = []
         modules.append(nn.Sequential(
             nn.Conv2d(in_channels, out_channels, 1, bias=False),
-            nn.BatchNorm2d(out_channels),
+            # nn.BatchNorm2d(out_channels),
             nn.ReLU()))
 
         rates = tuple(atrous_rates)
@@ -82,7 +82,7 @@ class ASPP(nn.Module):
 
         self.project = nn.Sequential(
             nn.Conv2d(len(self.convs) * out_channels, out_channels, 1, bias=False),
-            nn.BatchNorm2d(out_channels),
+            # nn.BatchNorm2d(out_channels),
             nn.ReLU(),
             nn.Dropout(0.5))
 

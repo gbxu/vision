@@ -65,20 +65,27 @@ class InvertedResidual(nn.Module):
 
         # expand
         if cnf.expanded_channels != cnf.input_channels:
+            # layers.append(ConvNormActivation(cnf.input_channels, cnf.expanded_channels, kernel_size=1,
+            #                                  norm_layer=norm_layer, activation_layer=activation_layer))
             layers.append(ConvNormActivation(cnf.input_channels, cnf.expanded_channels, kernel_size=1,
-                                             norm_layer=norm_layer, activation_layer=activation_layer))
+                                             activation_layer=activation_layer))
 
         # depthwise
         stride = 1 if cnf.dilation > 1 else cnf.stride
+        # layers.append(ConvNormActivation(cnf.expanded_channels, cnf.expanded_channels, kernel_size=cnf.kernel,
+        #                                  stride=stride, dilation=cnf.dilation, groups=cnf.expanded_channels,
+        #                                  norm_layer=norm_layer, activation_layer=activation_layer))
         layers.append(ConvNormActivation(cnf.expanded_channels, cnf.expanded_channels, kernel_size=cnf.kernel,
                                          stride=stride, dilation=cnf.dilation, groups=cnf.expanded_channels,
-                                         norm_layer=norm_layer, activation_layer=activation_layer))
+                                         activation_layer=activation_layer))
         if cnf.use_se:
             squeeze_channels = _make_divisible(cnf.expanded_channels // 4, 8)
             layers.append(se_layer(cnf.expanded_channels, squeeze_channels))
 
         # project
-        layers.append(ConvNormActivation(cnf.expanded_channels, cnf.out_channels, kernel_size=1, norm_layer=norm_layer,
+        # layers.append(ConvNormActivation(cnf.expanded_channels, cnf.out_channels, kernel_size=1, norm_layer=norm_layer,
+        #                                  activation_layer=None))
+        layers.append(ConvNormActivation(cnf.expanded_channels, cnf.out_channels, kernel_size=1,
                                          activation_layer=None))
 
         self.block = nn.Sequential(*layers)
@@ -131,18 +138,24 @@ class MobileNetV3(nn.Module):
 
         # building first layer
         firstconv_output_channels = inverted_residual_setting[0].input_channels
-        layers.append(ConvNormActivation(3, firstconv_output_channels, kernel_size=3, stride=2, norm_layer=norm_layer,
+        # layers.append(ConvNormActivation(3, firstconv_output_channels, kernel_size=3, stride=2, norm_layer=norm_layer,
+        #                                  activation_layer=nn.ReLU))
+        layers.append(ConvNormActivation(3, firstconv_output_channels, kernel_size=3, stride=2,
                                          activation_layer=nn.ReLU))
 
         # building inverted residual blocks
+        # for cnf in inverted_residual_setting:
+        #     layers.append(block(cnf, norm_layer))
         for cnf in inverted_residual_setting:
-            layers.append(block(cnf, norm_layer))
+            layers.append(block(cnf))
 
         # building last several layers
         lastconv_input_channels = inverted_residual_setting[-1].out_channels
         lastconv_output_channels = 6 * lastconv_input_channels
+        # layers.append(ConvNormActivation(lastconv_input_channels, lastconv_output_channels, kernel_size=1,
+        #                                  norm_layer=norm_layer, activation_layer=nn.ReLU))
         layers.append(ConvNormActivation(lastconv_input_channels, lastconv_output_channels, kernel_size=1,
-                                         norm_layer=norm_layer, activation_layer=nn.ReLU))
+                                         activation_layer=nn.ReLU))
 
         self.features = nn.Sequential(*layers)
         self.avgpool = nn.AdaptiveAvgPool2d(1)

@@ -117,8 +117,8 @@ class ConvNormActivation(torch.nn.Sequential):
             padding = (kernel_size - 1) // 2 * dilation
         layers = [torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding,
                                   dilation=dilation, groups=groups, bias=False)]
-        if norm_layer is not None:
-            layers.append(norm_layer(out_channels))
+        # if norm_layer is not None:
+        #     layers.append(norm_layer(out_channels))
         if activation_layer is not None:
             layers.append(activation_layer(inplace=inplace))
         super().__init__(*layers)

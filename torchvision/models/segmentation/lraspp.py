@@ -59,7 +59,7 @@ class LRASPPHead(nn.Module):
         super().__init__()
         self.cbr = nn.Sequential(
             nn.Conv2d(high_channels, inter_channels, 1, bias=False),
-            nn.BatchNorm2d(inter_channels),
+            # nn.BatchNorm2d(inter_channels),
             nn.ReLU(inplace=True)
         )
         self.scale = nn.Sequential(

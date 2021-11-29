@@ -49,7 +49,7 @@ class BackboneWithFPN(nn.Module):
 def resnet_fpn_backbone(
     backbone_name,
     pretrained,
-    norm_layer=misc_nn_ops.FrozenBatchNorm2d,
+    # norm_layer=misc_nn_ops.FrozenBatchNorm2d,
     trainable_layers=3,
     returned_layers=None,
     extra_blocks=None
@@ -137,12 +137,13 @@ def mobilenet_backbone(
     backbone_name,
     pretrained,
     fpn,
-    norm_layer=misc_nn_ops.FrozenBatchNorm2d,
+    # norm_layer=misc_nn_ops.FrozenBatchNorm2d,
     trainable_layers=2,
     returned_layers=None,
     extra_blocks=None
 ):
-    backbone = mobilenet.__dict__[backbone_name](pretrained=pretrained, norm_layer=norm_layer).features
+    # backbone = mobilenet.__dict__[backbone_name](pretrained=pretrained, norm_layer=norm_layer).features
+    backbone = mobilenet.__dict__[backbone_name](pretrained=pretrained).features
 
     # Gather the indices of blocks which are strided. These are the locations of C1, ..., Cn-1 blocks.
     # The first and last blocks are always included because they are the C0 (conv1) and Cn.

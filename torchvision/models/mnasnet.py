@@ -41,16 +41,16 @@ class _InvertedResidual(nn.Module):
         self.layers = nn.Sequential(
             # Pointwise
             nn.Conv2d(in_ch, mid_ch, 1, bias=False),
-            nn.BatchNorm2d(mid_ch, momentum=bn_momentum),
+            # nn.BatchNorm2d(mid_ch, momentum=bn_momentum),
             nn.ReLU(inplace=True),
             # Depthwise
             nn.Conv2d(mid_ch, mid_ch, kernel_size, padding=kernel_size // 2,
                       stride=stride, groups=mid_ch, bias=False),
-            nn.BatchNorm2d(mid_ch, momentum=bn_momentum),
+            # nn.BatchNorm2d(mid_ch, momentum=bn_momentum),
             nn.ReLU(inplace=True),
             # Linear pointwise. Note that there's no activation.
             nn.Conv2d(mid_ch, out_ch, 1, bias=False),
-            nn.BatchNorm2d(out_ch, momentum=bn_momentum))
+            # nn.BatchNorm2d(out_ch, momentum=bn_momentum))
 
     def forward(self, input: Tensor) -> Tensor:
         if self.apply_residual:
@@ -118,15 +118,15 @@ class MNASNet(torch.nn.Module):
         layers = [
             # First layer: regular conv.
             nn.Conv2d(3, depths[0], 3, padding=1, stride=2, bias=False),
-            nn.BatchNorm2d(depths[0], momentum=_BN_MOMENTUM),
+            # nn.BatchNorm2d(depths[0], momentum=_BN_MOMENTUM),
             nn.ReLU(inplace=True),
             # Depthwise separable, no skip.
             nn.Conv2d(depths[0], depths[0], 3, padding=1, stride=1,
                       groups=depths[0], bias=False),
-            nn.BatchNorm2d(depths[0], momentum=_BN_MOMENTUM),
+            # nn.BatchNorm2d(depths[0], momentum=_BN_MOMENTUM),
             nn.ReLU(inplace=True),
             nn.Conv2d(depths[0], depths[1], 1, padding=0, stride=1, bias=False),
-            nn.BatchNorm2d(depths[1], momentum=_BN_MOMENTUM),
+            # nn.BatchNorm2d(depths[1], momentum=_BN_MOMENTUM),
             # MNASNet blocks: stacks of inverted residuals.
             _stack(depths[1], depths[2], 3, 2, 3, 3, _BN_MOMENTUM),
             _stack(depths[2], depths[3], 5, 2, 3, 3, _BN_MOMENTUM),
@@ -136,7 +136,7 @@ class MNASNet(torch.nn.Module):
             _stack(depths[6], depths[7], 3, 1, 6, 1, _BN_MOMENTUM),
             # Final mapping to classifier input.
             nn.Conv2d(depths[7], 1280, 1, padding=0, stride=1, bias=False),
-            nn.BatchNorm2d(1280, momentum=_BN_MOMENTUM),
+            # nn.BatchNorm2d(1280, momentum=_BN_MOMENTUM),
             nn.ReLU(inplace=True),
         ]
         self.layers = nn.Sequential(*layers)
@@ -178,14 +178,14 @@ class MNASNet(torch.nn.Module):
             depths = _get_depths(self.alpha)
             v1_stem = [
                 nn.Conv2d(3, 32, 3, padding=1, stride=2, bias=False),
-                nn.BatchNorm2d(32, momentum=_BN_MOMENTUM),
+                # nn.BatchNorm2d(32, momentum=_BN_MOMENTUM),
                 nn.ReLU(inplace=True),
                 nn.Conv2d(32, 32, 3, padding=1, stride=1, groups=32,
                           bias=False),
-                nn.BatchNorm2d(32, momentum=_BN_MOMENTUM),
+                # nn.BatchNorm2d(32, momentum=_BN_MOMENTUM),
                 nn.ReLU(inplace=True),
                 nn.Conv2d(32, 16, 1, padding=0, stride=1, bias=False),
-                nn.BatchNorm2d(16, momentum=_BN_MOMENTUM),
+                # nn.BatchNorm2d(16, momentum=_BN_MOMENTUM),
                 _stack(16, depths[2], 3, 2, 3, 3, _BN_MOMENTUM),
             ]
             for idx, layer in enumerate(v1_stem):

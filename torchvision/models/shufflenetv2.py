@@ -53,9 +53,9 @@ class InvertedResidual(nn.Module):
         if self.stride > 1:
             self.branch1 = nn.Sequential(
                 self.depthwise_conv(inp, inp, kernel_size=3, stride=self.stride, padding=1),
-                nn.BatchNorm2d(inp),
+                # nn.BatchNorm2d(inp),
                 nn.Conv2d(inp, branch_features, kernel_size=1, stride=1, padding=0, bias=False),
-                nn.BatchNorm2d(branch_features),
+                # nn.BatchNorm2d(branch_features),
                 nn.ReLU(inplace=True),
             )
         else:
@@ -64,12 +64,12 @@ class InvertedResidual(nn.Module):
         self.branch2 = nn.Sequential(
             nn.Conv2d(inp if (self.stride > 1) else branch_features,
                       branch_features, kernel_size=1, stride=1, padding=0, bias=False),
-            nn.BatchNorm2d(branch_features),
+            # nn.BatchNorm2d(branch_features),
             nn.ReLU(inplace=True),
             self.depthwise_conv(branch_features, branch_features, kernel_size=3, stride=self.stride, padding=1),
-            nn.BatchNorm2d(branch_features),
+            # nn.BatchNorm2d(branch_features),
             nn.Conv2d(branch_features, branch_features, kernel_size=1, stride=1, padding=0, bias=False),
-            nn.BatchNorm2d(branch_features),
+            # nn.BatchNorm2d(branch_features),
             nn.ReLU(inplace=True),
         )
 

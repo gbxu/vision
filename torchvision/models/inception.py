@@ -470,5 +470,5 @@ class BasicConv2d(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         x = self.conv(x)
-        x = self.bn(x)
+        # x = self.bn(x)
         return F.relu(x, inplace=True)

@@ -50,8 +50,10 @@ class SimpleStemIN(ConvNormActivation):
         norm_layer: Callable[..., nn.Module],
         activation_layer: Callable[..., nn.Module],
     ) -> None:
+        # super().__init__(width_in, width_out, kernel_size=3, stride=2,
+        #                  norm_layer=norm_layer, activation_layer=activation_layer)
         super().__init__(width_in, width_out, kernel_size=3, stride=2,
-                         norm_layer=norm_layer, activation_layer=activation_layer)
+                         activation_layer=activation_layer)
 
 
 class BottleneckTransform(nn.Sequential):
@@ -72,10 +74,14 @@ class BottleneckTransform(nn.Sequential):
         w_b = int(round(width_out * bottleneck_multiplier))
         g = w_b // group_width
 
+        # layers["a"] = ConvNormActivation(width_in, w_b, kernel_size=1, stride=1,
+        #                                  norm_layer=norm_layer, activation_layer=activation_layer)
+        # layers["b"] = ConvNormActivation(w_b, w_b, kernel_size=3, stride=stride, groups=g,
+        #                                  norm_layer=norm_layer, activation_layer=activation_layer)
         layers["a"] = ConvNormActivation(width_in, w_b, kernel_size=1, stride=1,
-                                         norm_layer=norm_layer, activation_layer=activation_layer)
+                                         activation_layer=activation_layer)
         layers["b"] = ConvNormActivation(w_b, w_b, kernel_size=3, stride=stride, groups=g,
-                                         norm_layer=norm_layer, activation_layer=activation_layer)
+                                         activation_layer=activation_layer)
 
         if se_ratio:
             # The SE reduction ratio is defined with respect to the
@@ -87,8 +93,10 @@ class BottleneckTransform(nn.Sequential):
                 activation=activation_layer,
             )
 
+        # layers["c"] = ConvNormActivation(w_b, width_out, kernel_size=1, stride=1,
+        #                                  norm_layer=norm_layer, activation_layer=None)
         layers["c"] = ConvNormActivation(w_b, width_out, kernel_size=1, stride=1,
-                                         norm_layer=norm_layer, activation_layer=None)
+                                         activation_layer=None)
         super().__init__(layers)
 
 
@@ -112,8 +120,10 @@ class ResBottleneckBlock(nn.Module):
         self.proj = None
         should_proj = (width_in != width_out) or (stride != 1)
         if should_proj:
+            # self.proj = ConvNormActivation(width_in, width_out, kernel_size=1,
+            #                                stride=stride, norm_layer=norm_layer, activation_layer=None)
             self.proj = ConvNormActivation(width_in, width_out, kernel_size=1,
-                                           stride=stride, norm_layer=norm_layer, activation_layer=None)
+                                           stride=stride, activation_layer=None)
         self.f = BottleneckTransform(
             width_in,
             width_out,
@@ -300,7 +310,7 @@ class RegNet(nn.Module):
         if stem_type is None:
             stem_type = SimpleStemIN
         if norm_layer is None:
-            norm_layer = nn.BatchNorm2d
+            norm_layer = nn.Identity #nn.BatchNorm2d
         if block_type is None:
             block_type = ResBottleneckBlock
         if activation is None:
