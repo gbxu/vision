@@ -147,7 +147,7 @@ class MobileNetV3(nn.Module):
         # for cnf in inverted_residual_setting:
         #     layers.append(block(cnf, norm_layer))
         for cnf in inverted_residual_setting:
-            layers.append(block(cnf))
+            layers.append(block(cnf, nn.Identity))
 
         # building last several layers
         lastconv_input_channels = inverted_residual_setting[-1].out_channels

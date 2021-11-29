@@ -50,7 +50,8 @@ class _InvertedResidual(nn.Module):
             nn.ReLU(inplace=True),
             # Linear pointwise. Note that there's no activation.
             nn.Conv2d(mid_ch, out_ch, 1, bias=False),
-            # nn.BatchNorm2d(out_ch, momentum=bn_momentum))
+            # nn.BatchNorm2d(out_ch, momentum=bn_momentum)
+        )
 
     def forward(self, input: Tensor) -> Tensor:
         if self.apply_residual:
