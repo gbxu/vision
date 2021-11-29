@@ -88,7 +88,7 @@ class FeaturePyramidNetwork(nn.Module):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_uniform_(m.weight, a=1)
-                nn.init.constant_(m.bias, 0)
+                # nn.init.constant_(m.bias, 0)
 
         if extra_blocks is not None:
             assert isinstance(extra_blocks, ExtraFPNBlock)
@@ -186,7 +186,7 @@ class LastLevelP6P7(ExtraFPNBlock):
         self.p7 = nn.Conv2d(out_channels, out_channels, 3, 2, 1, bias=False)
         for module in [self.p6, self.p7]:
             nn.init.kaiming_uniform_(module.weight, a=1)
-            nn.init.constant_(module.bias, 0)
+            # nn.init.constant_(module.bias, 0)
         self.use_P5 = in_channels == out_channels
 
     def forward(

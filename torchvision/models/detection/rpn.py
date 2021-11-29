@@ -47,7 +47,8 @@ class RPNHead(nn.Module):
 
         for layer in self.children():
             torch.nn.init.normal_(layer.weight, std=0.01)
-            torch.nn.init.constant_(layer.bias, 0)
+            if layer.bias is not None:
+                torch.nn.init.constant_(layer.bias, 0)
 
     def forward(self, x):
         # type: (List[Tensor]) -> Tuple[List[Tensor], List[Tensor]]

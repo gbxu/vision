@@ -91,7 +91,8 @@ def resnet_fpn_backbone(
     """
     backbone = resnet.__dict__[backbone_name](
         pretrained=pretrained,
-        norm_layer=norm_layer)
+        # norm_layer=norm_layer
+    )
 
     # select layers that wont be frozen
     assert 0 <= trainable_layers <= 5

@@ -68,8 +68,8 @@ class SSDLiteHead(nn.Module):
         super().__init__()
         # self.classification_head = SSDLiteClassificationHead(in_channels, num_anchors, num_classes, norm_layer)
         # self.regression_head = SSDLiteRegressionHead(in_channels, num_anchors, norm_layer)
-        self.classification_head = SSDLiteClassificationHead(in_channels, num_anchors, num_classes)
-        self.regression_head = SSDLiteRegressionHead(in_channels, num_anchors)
+        self.classification_head = SSDLiteClassificationHead(in_channels, num_anchors, num_classes, norm_layer=None)
+        self.regression_head = SSDLiteRegressionHead(in_channels, num_anchors, norm_layer=None)
 
     def forward(self, x: List[Tensor]) -> Dict[str, Tensor]:
         return {
@@ -84,7 +84,7 @@ class SSDLiteClassificationHead(SSDScoringHead):
         cls_logits = nn.ModuleList()
         for channels, anchors in zip(in_channels, num_anchors):
             # cls_logits.append(_prediction_block(channels, num_classes * anchors, 3, norm_layer))
-            cls_logits.append(_prediction_block(channels, num_classes * anchors, 3))
+            cls_logits.append(_prediction_block(channels, num_classes * anchors, 3, norm_layer=None))
         _normal_init(cls_logits)
         super().__init__(cls_logits, num_classes)
 
@@ -94,7 +94,7 @@ class SSDLiteRegressionHead(SSDScoringHead):
         bbox_reg = nn.ModuleList()
         for channels, anchors in zip(in_channels, num_anchors):
             # bbox_reg.append(_prediction_block(channels, 4 * anchors, 3, norm_layer))
-            bbox_reg.append(_prediction_block(channels, 4 * anchors, 3))
+            bbox_reg.append(_prediction_block(channels, 4 * anchors, 3, norm_layer=None))
         _normal_init(bbox_reg)
         super().__init__(bbox_reg, 4)
 
@@ -206,7 +206,7 @@ def ssdlite320_mobilenet_v3_large(pretrained: bool = False, progress: bool = Tru
     # backbone = _mobilenet_extractor("mobilenet_v3_large", progress, pretrained_backbone, trainable_backbone_layers,
     #                                 norm_layer, reduced_tail=reduce_tail, **kwargs)
     backbone = _mobilenet_extractor("mobilenet_v3_large", progress, pretrained_backbone, trainable_backbone_layers,
-                                    reduced_tail=reduce_tail, **kwargs)
+                                    norm_layer=nn.Identity, reduced_tail=reduce_tail, **kwargs)
 
     size = (320, 320)
     anchor_generator = DefaultBoxGenerator([[2, 3] for _ in range(6)], min_ratio=0.2, max_ratio=0.95)
