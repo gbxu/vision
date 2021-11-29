@@ -16,12 +16,12 @@ args = parser.parse_args()
 
 get_model={
     # # Classification
-    "alexnet": (torchvision.models.alexnet(), (1, 3, 224, 224), (1000,)),
+    "alexnet": (torchvision.models.alexnet(), (4096, 3, 224, 224), (1000,)),
 
-    "densenet121": (torchvision.models.densenet121(), (1, 3, 224, 224), (1000,)),
-    "densenet169": (torchvision.models.densenet169(), (1, 3, 224, 224), (1000,)),
-    "densenet161": (torchvision.models.densenet161(), (1, 3, 224, 224), (1000,)),
-    "densenet201": (torchvision.models.densenet201(), (1, 3, 224, 224), (1000,)),
+    "densenet121": (torchvision.models.densenet121(), (128, 3, 224, 224), (1000,)),
+    "densenet169": (torchvision.models.densenet169(), (128, 3, 224, 224), (1000,)),
+    "densenet161": (torchvision.models.densenet161(), (128, 3, 224, 224), (1000,)),
+    "densenet201": (torchvision.models.densenet201(), (128, 3, 224, 224), (1000,)),
 
     "efficientnet_b0": (torchvision.models.efficientnet_b0(norm_layer=torch.nn.Identity), (1, 3, 256, 224), (1000,)),
     "efficientnet_b1": (torchvision.models.efficientnet_b1(norm_layer=torch.nn.Identity), (1, 3, 256, 240), (1000,)),
@@ -60,11 +60,11 @@ get_model={
     "regnet_x_16gf": (torchvision.models.regnet_x_16gf(), (1, 3, 224, 224), (1000,)),
     "regnet_x_32gf": (torchvision.models.regnet_x_32gf(), (1, 3, 224, 224), (1000,)),
 
-    "resnet18": (torchvision.models.resnet18(norm_layer=torch.nn.Identity), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "resnet34": (torchvision.models.resnet34(norm_layer=torch.nn.Identity), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "resnet50": (torchvision.models.resnet50(norm_layer=torch.nn.Identity), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "resnet101": (torchvision.models.resnet101(norm_layer=torch.nn.Identity), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "resnet152": (torchvision.models.resnet152(norm_layer=torch.nn.Identity), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
+    "resnet18": (torchvision.models.resnet18(norm_layer=torch.nn.Identity), (2048, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
+    "resnet34": (torchvision.models.resnet34(norm_layer=torch.nn.Identity), (1024, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
+    "resnet50": (torchvision.models.resnet50(norm_layer=torch.nn.Identity), (512, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
+    "resnet101": (torchvision.models.resnet101(norm_layer=torch.nn.Identity), (256, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
+    "resnet152": (torchvision.models.resnet152(norm_layer=torch.nn.Identity), (256, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
 
     "resnext50_32x4d": (torchvision.models.resnext50_32x4d(), (1, 3, 224, 224), (1000,)),
     "resnext101_32x8d": (torchvision.models.resnext101_32x8d(), (1, 3, 224, 224), (1000,)),
@@ -74,20 +74,20 @@ get_model={
     "shufflenet_v2_x1_5": (torchvision.models.shufflenet_v2_x1_5(), (1, 3, 224, 224), (1000,)),
     "shufflenet_v2_x2_0": (torchvision.models.shufflenet_v2_x2_0(), (1, 3, 224, 224), (1000,)),
 
-    "squeezenet1_0": (torchvision.models.squeezenet1_0(), (1, 3, 224, 224), (1000,)),
-    "squeezenet1_1": (torchvision.models.squeezenet1_1(), (1, 3, 224, 224), (1000,)), # torch.nn.BatchNorm2d
+    "squeezenet1_0": (torchvision.models.squeezenet1_0(), (512, 3, 224, 224), (1000,)),
+    "squeezenet1_1": (torchvision.models.squeezenet1_1(), (1024, 3, 224, 224), (1000,)), # torch.nn.BatchNorm2d
 
-    "vgg11": (torchvision.models.vgg11(), (1, 3, 224, 224), (1000,)),
+    "vgg11": (torchvision.models.vgg11(), (512, 3, 224, 224), (1000,)),
     # "vgg11_bn": (torchvision.models.vgg11_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "vgg13": (torchvision.models.vgg13(), (1, 3, 224, 224), (1000,)),
+    "vgg13": (torchvision.models.vgg13(), (256, 3, 224, 224), (1000,)),
     # "vgg13_bn": (torchvision.models.vgg13_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "vgg16": (torchvision.models.vgg16(), (1, 3, 224, 224), (1000,)),
+    "vgg16": (torchvision.models.vgg16(), (256, 3, 224, 224), (1000,)),
     # "vgg16_bn": (torchvision.models.vgg16_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "vgg19": (torchvision.models.vgg19(), (128, 3, 224, 224), (1000,)), # V100-32GB
+    "vgg19": (torchvision.models.vgg19(), (256, 3, 224, 224), (1000,)), # V100-32GB
     # "vgg19_bn": (torchvision.models.vgg19_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
     
-    "wide_resnet50_2": (torchvision.models.wide_resnet50_2(norm_layer=torch.nn.Identity), (1, 3, 224, 224), (1000,)),
-    "wide_resnet101_2": (torchvision.models.wide_resnet101_2(norm_layer=torch.nn.Identity), (1, 3, 224, 224), (1000,)),
+    "wide_resnet50_2": (torchvision.models.wide_resnet50_2(norm_layer=torch.nn.Identity), (512, 3, 224, 224), (1000,)),
+    "wide_resnet101_2": (torchvision.models.wide_resnet101_2(norm_layer=torch.nn.Identity), (256, 3, 224, 224), (1000,)),
 }
 
 def infer_shapes(model, inputs, batch):
@@ -160,11 +160,11 @@ class WrapperModelAux(torch.nn.Module):
             loss = self.loss(out, labels)
             return loss
 
-def get_model_with_datas(model_name, batch_size):
+def get_model_with_datas(model_name, set_batch_size):
     print("get models and datas:", model_name)
     torchvision_model, (batch_size, channels, height, width), (num_classes, ) = get_model[model_name]
-    if batch_size > 0:
-        batch_size = batch_size
+    if set_batch_size > 0:
+        batch_size = set_batch_size
     dummy_input = torch.randn(batch_size, channels, height, width)
     dummy_labels = torch.randint(0, num_classes, (batch_size,))
 

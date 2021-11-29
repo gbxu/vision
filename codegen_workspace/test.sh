@@ -1,50 +1,6 @@
-rm -rf data
-mkdir data
-cd data
 
-mkdir classification
-cd classification
-python3 ../../classification2onnx.py > log 2>&1
-cd ..
-
-mkdir object_detection
-cd object_detection
-python3 ../../detection2onnx.py > log 2>&1
-cd ..
-
-mkdir semantic_segmentation
-cd semantic_segmentation
-python3 ../../segmentation2onnx.py > log 2>&1
-cd ..
-
-mkdir video_classification
-cd video_classification
-python3 ../../video2onnx.py > log 2>&1
-cd ..
-
-cd ..
-
-# WORKLOADS=("./data/classification/*.onnx"  )
-# WORKLOADS=("./data/semantic_segmentation/*.onnx" )
-# WORKLOADS=("./data/video_classification/*.onnx")
-WORKLOADS=("./data/classification/*.onnx" "./data/semantic_segmentation/*.onnx" "./data/object_detection/*.onnx" "./data/video_classification/*.onnx")
-WORKLOADS=${WORKLOADS[*]}
-for WORKLOAD in $WORKLOADS
+for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
 do
-    echo $WORKLOAD
-    for f in $WORKLOAD
-    do
-        echo $f
-        CURR_DIR="./codegen/"${f#*/}
-        rm -rf $CURR_DIR
-        mkdir -p $CURR_DIR
-        ${HOME}/nnfusion/build/src/tools/nnfusion/nnfusion $f \
-        -f onnx -p "batch:8" \
-        -ftraining_mode=true -fautodiff=true -ftraining_optimizer="{\"optimizer\":\"SGD\",\"learning_rate\":0.01}" \
-        -fblockfusion_level=0 -fenable_all_bert_fusion=true -fkernel_fusion_level=2 \
-        -fextern_result_memory=true \
-        -fadd_sc_allreduce=true \
-        -min_log_level=0 > $CURR_DIR/temp 2>&1
-        mv nnfusion_rt $CURR_DIR/
-    done
+    echo model_name=$model_name
+    python3 pytorch_runtime.py --model_name $model_name > $model_name.txt 2>&1
 done
