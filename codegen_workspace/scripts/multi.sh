@@ -59,7 +59,7 @@ do
     ALL_NODES=$ALL_NODES,$node:$GPU_PER_NODE
 done
 
-LOG_DIR="${HOME}/pita/survey/onnx_vgg_train_nnfusion_tvm/data/"
+LOG_DIR="${HOME}/vision_log/"
 
 PROFILER_CMD="nsys profile -f true -c cudaProfilerApi --stop-on-range-end=true "
 # "/usr/local/cuda-10.0/bin/nvprof --profile-child-processes --profile-from-start off -o ${LOG_PATH}/%h.%p.nvvp "
@@ -68,87 +68,44 @@ echo "performance---------------------------------------------------------------
 
 for i in `seq 3`
 do
-    cd ${HOME}/pita/survey/onnx_vgg_train_nnfusion_tvm/nnfusion_codegen/vgg_model/
-    LOG_PATH=${LOG_DIR}"performance/dp_pytorch/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
-    rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
-    echo "${LOG_PATH} ======================================"
-    ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
-    python3 pytorch_runtime.py --master_ip ${MASTER} > ${LOG_PATH}/result.txt
-done
+    for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
+    do
+        cd ${HOME}/vision/codegen_workspace
+        LOG_PATH=${LOG_DIR}"/performance/${model_name}_bs${dic[$model_name]}/dp_pytorch/t${i}"
+        rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
+        echo "${LOG_PATH} ======================================"
+        ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
+        python3 pytorch_runtime.py --master_ip ${MASTER} --model_name $model_name --batch_size ${dic[$model_name]} > ${LOG_PATH}/result.txt
 
-for i in `seq 3`
-do
-    cd ${HOME}/pita/survey/onnx_vgg_train_nnfusion_tvm/dp_cudalib/cuda_codegen/build/
-    LOG_PATH=${LOG_DIR}"performance/dp_cudalib/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
-    rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
-    echo "${LOG_PATH} ======================================"
-    ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
-    ./main_test > ${LOG_PATH}/result.txt
+        cd ${HOME}/vision/codegen_workspace/testmodels/${model_name}_bs${dic[$model_name]}/dp_cudalib/cuda_codegen/build/
+        LOG_PATH=${LOG_DIR}"performance/${model_name}_bs${dic[$model_name]}/dp_cudalib/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
+        rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
+        echo "${LOG_PATH} ======================================"
+        ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
+        ./main_test > ${LOG_PATH}/result.txt
+    done
 done
-
-# for i in `seq 3`
-# do
-#     cd ${HOME}/pita/survey/onnx_vgg_train_nnfusion_tvm/dp_tvm/cuda_codegen/build/
-#     LOG_PATH=${LOG_DIR}"performance/dp_tvm/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
-#     rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
-#     echo "${LOG_PATH} ======================================"
-#     ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
-#     ./main_test > ${LOG_PATH}/result.txt
-# done
 
 echo "contention analysis -------------------------------------------------------------------------------"
 
 for i in `seq 3`
 do
-    cd ${HOME}/pita/survey/onnx_vgg_train_nnfusion_tvm/nnfusion_codegen/vgg_model/
-    LOG_PATH=${LOG_DIR}"kernels/dp_pytorch/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
-    rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
-    echo "${LOG_PATH} ======================================"
-    ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
-    ${PROFILER_CMD} -o ${LOG_PATH}/%h.%p.nvvp \
-    python3 pytorch_runtime.py --master_ip ${MASTER} > ${LOG_PATH}/result.txt
+    for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
+    do
+        cd ${HOME}/vision/codegen_workspace
+        LOG_PATH=${LOG_DIR}"/kernels/${model_name}_bs${dic[$model_name]}/dp_pytorch/t${i}"
+        rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
+        echo "${LOG_PATH} ======================================"
+        ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
+        ${PROFILER_CMD} -o ${LOG_PATH}/%h.%p.nvvp \
+        python3 pytorch_runtime.py --master_ip ${MASTER} --model_name $model_name --batch_size ${dic[$model_name]} > ${LOG_PATH}/result.txt
+
+        cd ${HOME}/vision/codegen_workspace/testmodels/${model_name}_bs${dic[$model_name]}/dp_cudalib/cuda_codegen/build/
+        LOG_PATH=${LOG_DIR}"kernels/${model_name}_bs${dic[$model_name]}/dp_cudalib/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
+        rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
+        echo "${LOG_PATH} ======================================"
+        ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
+        ${PROFILER_CMD} -o ${LOG_PATH}/%h.%p.nvvp \
+        ./main_test > ${LOG_PATH}/result.txt
+    done
 done
-
-for i in `seq 3`
-do
-    cd ${HOME}/pita/survey/onnx_vgg_train_nnfusion_tvm/dp_cudalib/cuda_codegen/build/
-    LOG_PATH=${LOG_DIR}"kernels/dp_cudalib/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
-    rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
-    echo "${LOG_PATH} ======================================"
-    ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
-    ${PROFILER_CMD} -o ${LOG_PATH}/%h.%p.nvvp \
-    ./main_test > ${LOG_PATH}/result.txt
-done
-
-# for i in `seq 3`
-# do
-#     cd ${HOME}/pita/survey/onnx_vgg_train_nnfusion_tvm/dp_tvm/cuda_codegen/build/
-#     LOG_PATH=${LOG_DIR}"kernels/dp_tvm/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
-#     rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
-#     echo "${LOG_PATH} ======================================"
-#     ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
-#     ${PROFILER_CMD} -o ${LOG_PATH}/%h.%p.nvvp \
-#     ./main_test > ${LOG_PATH}/result.txt
-# done
-exit
-# for i in `seq 3`
-# do
-#     cd ${HOME}/pita/survey/onnx_vgg_train_nnfusion_tvm/dp_tvm_serialize/cuda_codegen/build/
-#     LOG_PATH=${LOG_DIR}"kernels/dp_tvm_serialize/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
-#     rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
-#     echo "${LOG_PATH} ======================================"
-#     ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
-#     ${PROFILER_CMD} -o ${LOG_PATH}/%h.%p.nvvp \
-#     ./main_test > ${LOG_PATH}/result.txt
-# done
-
-# for i in `seq 3`
-# do
-#     cd ${HOME}/pita/survey/onnx_vgg_train_nnfusion_tvm/dp_cudalib_serialize/cuda_codegen/build/
-#     LOG_PATH=${LOG_DIR}"kernels/dp_cudalib_serialize/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
-#     rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
-#     echo "${LOG_PATH} ======================================"
-#     ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
-#     ${PROFILER_CMD} -o ${LOG_PATH}/%h.%p.nvvp \
-#     ./main_test > ${LOG_PATH}/result.txt
-# done
