@@ -7,26 +7,6 @@ import os
 from torch.nn.parallel import DistributedDataParallel as DDP
 from classification2onnx import get_model_with_datas as get_model_with_datas_classification
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--rank", type=int, default=0, help="global rank")
-parser.add_argument("--model_type", type=str, default="classification", help="classification, segmentation, video, detection")
-parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
-parser.add_argument("--batch_size", type=int, default=0, help="batch size")
-parser.add_argument("--local_rank", type=int, default=0, help="local rank")
-parser.add_argument("--world_size", type=int, default=1, help="world size")
-parser.add_argument("--master_ip", type=str, default="localhost", help="master ip")
-parser.add_argument("--master_port", type=str, default="6000", help="master port")
-parser.add_argument("-m", "--allreduce_buffer", type=int, default=25, help="MB of allreduce_buffer")
-parser.add_argument("--jit", action='store_true', default=False, help="enable torhc.jit")
-args = parser.parse_args()
-args.rank = int(os.environ.get('OMPI_COMM_WORLD_RANK', args.rank))
-args.local_rank = int(os.environ.get('OMPI_COMM_WORLD_LOCAL_RANK', args.local_rank))
-args.world_size = int(os.environ.get('OMPI_COMM_WORLD_SIZE', args.world_size))
-device = args.local_rank
-torch.cuda.set_device(device)
-if args.rank == 0:
-    print(args)
-
 def pytorch_train():
     if args.model_type == "classification":
         model, input_args, ordered_input_names, output_names, dynamic_axes = get_model_with_datas_classification(args.model_name, args.batch_size)
@@ -157,4 +137,24 @@ def pytorch_train():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--rank", type=int, default=0, help="global rank")
+    parser.add_argument("--model_type", type=str, default="classification", help="classification, segmentation, video, detection")
+    parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
+    parser.add_argument("--batch_size", type=int, default=0, help="batch size")
+    parser.add_argument("--local_rank", type=int, default=0, help="local rank")
+    parser.add_argument("--world_size", type=int, default=1, help="world size")
+    parser.add_argument("--master_ip", type=str, default="localhost", help="master ip")
+    parser.add_argument("--master_port", type=str, default="6000", help="master port")
+    parser.add_argument("-m", "--allreduce_buffer", type=int, default=25, help="MB of allreduce_buffer")
+    parser.add_argument("--jit", action='store_true', default=False, help="enable torhc.jit")
+    args = parser.parse_args()
+    args.rank = int(os.environ.get('OMPI_COMM_WORLD_RANK', args.rank))
+    args.local_rank = int(os.environ.get('OMPI_COMM_WORLD_LOCAL_RANK', args.local_rank))
+    args.world_size = int(os.environ.get('OMPI_COMM_WORLD_SIZE', args.world_size))
+    device = args.local_rank
+    torch.cuda.set_device(device)
+    if args.rank == 0:
+        print(args)
+
     pytorch_train()

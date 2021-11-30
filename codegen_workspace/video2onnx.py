@@ -9,11 +9,6 @@ import onnx
 import argparse
 import warnings
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
-parser.add_argument("--batch_size", type=int, default=0, help="batch size")
-args = parser.parse_args()
-
 get_model={
     # Video classification
     "r3d_18": (torchvision.models.video.r3d_18(), (1, 3, 16,112, 112), (400,)),
@@ -63,6 +58,11 @@ class WrapperModel(torch.nn.Module):
         return loss
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
+    parser.add_argument("--batch_size", type=int, default=0, help="batch size")
+    args = parser.parse_args()
+
     if args.model_name == None:
         model_names = get_model.keys()
     else:

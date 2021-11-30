@@ -9,11 +9,6 @@ import onnx
 import argparse
 import warnings
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
-parser.add_argument("--batch_size", type=int, default=0, help="batch size")
-args = parser.parse_args()
-
 get_model={
     # Object Detection, Instance Segmentation and Person Keypoint Detection
     "fasterrcnn_resnet50_fpn": (torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False, pretrained_backbone=False, ), (2, 3, 600, 1000), (91, 11)), # pytorch->onnx fails: randperm
@@ -85,6 +80,11 @@ class WrapperModel(torch.nn.Module):
             return total_loss
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
+    parser.add_argument("--batch_size", type=int, default=0, help="batch size")
+    args = parser.parse_args()
+
     if args.model_name == None:
         model_names = get_model.keys()
     else:

@@ -9,11 +9,6 @@ import onnx
 import argparse
 import warnings
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
-parser.add_argument("--batch_size", type=int, default=0, help="batch size")
-args = parser.parse_args()
-
 get_model={
     # # Classification
     "alexnet": (torchvision.models.alexnet(), (4096, 3, 224, 224), (1000,)),
@@ -77,7 +72,7 @@ get_model={
     "squeezenet1_0": (torchvision.models.squeezenet1_0(), (512, 3, 224, 224), (1000,)),
     "squeezenet1_1": (torchvision.models.squeezenet1_1(), (1024, 3, 224, 224), (1000,)), # torch.nn.BatchNorm2d
 
-    "vgg11": (torchvision.models.vgg11(), (512, 3, 224, 224), (1000,)),
+    "vgg11": (torchvision.models.vgg11(), (256, 3, 224, 224), (1000,)),
     # "vgg11_bn": (torchvision.models.vgg11_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
     "vgg13": (torchvision.models.vgg13(), (256, 3, 224, 224), (1000,)),
     # "vgg13_bn": (torchvision.models.vgg13_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
@@ -187,6 +182,11 @@ def get_model_with_datas(model_name, set_batch_size):
     return model, input_args, ordered_input_names, output_names, dynamic_axes
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
+    parser.add_argument("--batch_size", type=int, default=0, help="batch size")
+    args = parser.parse_args()
+
     if args.model_name == None:
         model_names = get_model.keys()
     else:

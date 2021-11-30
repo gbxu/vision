@@ -10,11 +10,6 @@ import onnx
 import argparse
 import warnings
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
-parser.add_argument("--batch_size", type=int, default=0, help="batch size")
-args = parser.parse_args()
-
 get_model={
     # Semantic Segmentation
     "fcn_resnet50": (torchvision.models.segmentation.fcn_resnet50(aux_loss=True, pretrained_backbone=False), (1, 3, 520, 520), (21,) ),
@@ -84,6 +79,11 @@ class WrapperModelOut(torch.nn.Module):
         return loss
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")
+    parser.add_argument("--batch_size", type=int, default=0, help="batch size")
+    args = parser.parse_args()
+
     if args.model_name == None:
         model_names = get_model.keys()
     else:
