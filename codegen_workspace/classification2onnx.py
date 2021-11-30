@@ -14,8 +14,8 @@ get_model={
     "alexnet": (torchvision.models.alexnet(), (4096, 3, 224, 224), (1000,)),
 
     "densenet121": (torchvision.models.densenet121(), (128, 3, 224, 224), (1000,)),
-    "densenet169": (torchvision.models.densenet169(), (128, 3, 224, 224), (1000,)),
     "densenet161": (torchvision.models.densenet161(), (128, 3, 224, 224), (1000,)),
+    "densenet169": (torchvision.models.densenet169(), (128, 3, 224, 224), (1000,)),
     "densenet201": (torchvision.models.densenet201(), (128, 3, 224, 224), (1000,)),
 
     "efficientnet_b0": (torchvision.models.efficientnet_b0(norm_layer=torch.nn.Identity), (1, 3, 256, 224), (1000,)),
