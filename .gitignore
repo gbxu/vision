@@ -44,4 +44,7 @@ xcuserdata/
 # codegen
 codegen_workspace/codegen
 codegen_workspace/data
-codegen_workspace/testmodel
+codegen_workspace/testonnxs
+codegen_workspace/testmodels
+codegen_workspace/log
+
