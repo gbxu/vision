@@ -71,7 +71,7 @@ do
     for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
     do
         cd ${HOME}/vision/codegen_workspace
-        LOG_PATH=${LOG_DIR}"/performance/${model_name}_bs${dic[$model_name]}/dp_pytorch/t${i}"
+        LOG_PATH=${LOG_DIR}"/performance/${model_name}_bs${dic[$model_name]}/dp_pytorch/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
         rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
         echo "${LOG_PATH} ======================================"
         ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
@@ -93,7 +93,7 @@ do
     for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
     do
         cd ${HOME}/vision/codegen_workspace
-        LOG_PATH=${LOG_DIR}"/kernels/${model_name}_bs${dic[$model_name]}/dp_pytorch/t${i}"
+        LOG_PATH=${LOG_DIR}"/kernels/${model_name}_bs${dic[$model_name]}/dp_pytorch/${NUM_NODES}x${GPU_PER_NODE}V100/t${i}"
         rm -rf ${LOG_PATH} && mkdir -p ${LOG_PATH}
         echo "${LOG_PATH} ======================================"
         ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
