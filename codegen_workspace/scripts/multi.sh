@@ -52,6 +52,11 @@ PROFILER_CMD="nsys profile -f true -c cudaProfilerApi --stop-on-range-end=true "
 
 echo "performance-------------------------------------------------------------------------------"
 
+for node in $NODE_LIST
+do
+    scp -r ${SHELL_FOLDER}/../*.py $node:${SHELL_FOLDER}/../
+done
+
 for i in `seq 3`
 do
     for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
@@ -94,7 +99,6 @@ done
 for node in $NODE_LIST
 do
     scp -r ${SHELL_FOLDER}/../testmodels $node:${SHELL_FOLDER}/../
-    scp -r ${SHELL_FOLDER}/../*.py $node:${SHELL_FOLDER}/../
 done
 
 echo "performance-------------------------------------------------------------------------------"
