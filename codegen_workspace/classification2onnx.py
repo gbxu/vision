@@ -55,7 +55,7 @@ get_model={
     "regnet_x_16gf": (torchvision.models.regnet_x_16gf(), (1, 3, 224, 224), (1000,)),
     "regnet_x_32gf": (torchvision.models.regnet_x_32gf(), (1, 3, 224, 224), (1000,)),
 
-    "resnet18": (torchvision.models.resnet18(norm_layer=torch.nn.Identity), (2048, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
+    "resnet18": (torchvision.models.resnet18(norm_layer=torch.nn.Identity), (1024, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
     "resnet34": (torchvision.models.resnet34(norm_layer=torch.nn.Identity), (1024, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
     "resnet50": (torchvision.models.resnet50(norm_layer=torch.nn.Identity), (512, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
     "resnet101": (torchvision.models.resnet101(norm_layer=torch.nn.Identity), (256, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
