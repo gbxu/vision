@@ -25,15 +25,22 @@ def pytorch_train():
     if args.jit:
         model = torch.jit.trace(model, input_args)
 
+    gradient_idx = {}
+    parameters = [p for p in model.parameters() if p.requires_grad]
+    for idx, p in enumerate(parameters):
+        gradient_idx[p] = idx
     # dist._DEFAULT_FIRST_BUCKET_BYTES = 1MB
     # https://github.com/pytorch/pytorch/blob/2ca552160b23be5d1bf2accc23733a2066a78899/torch/csrc/distributed/c10d/reducer.cpp#L1951
     bucket_size_list = []
     bucket_shape_list = []
+    bucket_idx_list = []
     if args.world_size > 1:
         def record_bucket_size(state, bucket):
             bucket_size = 0
             curr_bucket_shapes = []
-            for tensor in list(reversed(bucket.gradients())):
+            curr_bucket_idx = []
+            for (tensor, parameter) in zip(reversed(bucket.gradients()), reversed(bucket.parameters())):
+                curr_bucket_idx.append(gradient_idx[parameter])
                 curr_bucket_shapes.append(tensor.shape)
                 size = 1
                 for i in tensor.shape:
@@ -41,11 +48,11 @@ def pytorch_train():
                 bucket_size += size
             bucket_size_list.append(bucket_size)
             bucket_shape_list.append(curr_bucket_shapes)
+            bucket_idx_list.append(curr_bucket_idx)
             fut = torch.futures.Future()
             fut.set_result(bucket.buffer())
             return fut
 
-    if args.world_size > 1:
         init_method = 'tcp://'
         init_method += args.master_ip + ':' + args.master_port
         torch.distributed.init_process_group(backend='nccl',
@@ -60,20 +67,22 @@ def pytorch_train():
     # https://github.com/pytorch/pytorch/blob/f6696c5a85bdc19ecd97e427c3b847e661d3fcfc/torch/csrc/distributed/c10d/reducer.cpp#L1651
     init_bucket_size_list = []
     init_bucket_shape_list = []
+    init_bucket_idx_list = []
     # warmup
     for i in range(10):
         bucket_size_list.clear()
         bucket_shape_list.clear()
+        bucket_idx_list.clear()
         optimizer.zero_grad()
         loss = model(images, labels)
         loss.backward()
         optimizer.step()
         if args.rank == 0 :
-            print("step ", i, " bucket_size_list:", bucket_size_list)
-            print("step ", i, " bucket_shape_list:", bucket_shape_list)
+            print("%s step %d: bucket_size_list:%s, bucket_shape_list:%s, bucket_idx_list:%s"%(args.model_name, i, bucket_size_list, bucket_shape_list, bucket_idx_list))
         if i == 0:
             init_bucket_size_list = bucket_size_list
             init_bucket_shape_list = bucket_shape_list
+            init_bucket_idx_list = bucket_idx_list
 
     repeat = 50
     torch.cuda.cudart().cudaProfilerStart()
@@ -92,47 +101,46 @@ def pytorch_train():
         print("pytorch train %s:"%(args.model_name), (end-start)/repeat*1000, "ms/iter.")
 
     # pure allreduc test
-    if args.rank == 0 :
-        print("== init iteration")
+    # if args.rank == 0 :
+    #     print("== init iteration")
+    # if args.world_size > 1:
+    #     torch.distributed.barrier()
+    # for idx, bucket_size in enumerate(init_bucket_size_list):
+    #     tensor = torch.randn(1, bucket_size).to(args.local_rank)
+    #     repeat = 50
+    #     start = time.time()
+    #     for i in range(repeat):
+    #         torch.cuda.nvtx.range_push('init pure_allreduce')
+    #         torch.distributed.all_reduce(tensor, op=torch.distributed.ReduceOp.SUM)
+    #         torch.cuda.synchronize(args.local_rank)
+    #         torch.cuda.nvtx.range_pop()
+    #     end = time.time()
+    #     torch.distributed.barrier()
+    #     duration=(end-start)/repeat*1000
+    #     if args.rank == 0 :
+    #         print("pytorch pure allreduce idx=%d, floats=%d, bytes=%d, duration=%fms, bw=%fGB/s"%(idx, bucket_size, bucket_size*4, duration, bucket_size*4/1024/1024/1024/(duration/1000)))
+
+
     if args.world_size > 1:
+        if args.rank == 0 :
+            print("== runtime iteration")
         torch.distributed.barrier()
-    for idx, bucket_size in enumerate(init_bucket_size_list):
-        tensor = torch.randn(1, bucket_size).to(args.local_rank)
-        repeat = 50
-        start = time.time()
-        for i in range(repeat):
-            torch.cuda.nvtx.range_push('init pure_allreduce')
-            torch.distributed.all_reduce(tensor, op=torch.distributed.ReduceOp.SUM)
-            torch.cuda.synchronize(args.local_rank)
-            torch.cuda.nvtx.range_pop()
-        end = time.time()
-        torch.distributed.barrier()
-        duration=(end-start)/repeat*1000
+        for idx, bucket_size in enumerate(bucket_size_list):
+            tensor = torch.randn(1, bucket_size).to(args.local_rank)
+            repeat = 50
+            start = time.time()
+            for i in range(repeat):
+                torch.cuda.nvtx.range_push('runtime pure_allreduce')
+                torch.distributed.all_reduce(tensor, op=torch.distributed.ReduceOp.SUM)
+                torch.cuda.synchronize(args.local_rank)
+                torch.cuda.nvtx.range_pop()
+            end = time.time()
+            torch.distributed.barrier()
+            duration=(end-start)/repeat*1000
         if args.rank == 0 :
             print("pytorch pure allreduce idx=%d, floats=%d, bytes=%d, duration=%fms, bw=%fGB/s"%(idx, bucket_size, bucket_size*4, duration, bucket_size*4/1024/1024/1024/(duration/1000)))
-
-
-    if args.rank == 0 :
-        print("== runtime iteration")
-    if args.world_size > 1:
         torch.distributed.barrier()
-    for idx, bucket_size in enumerate(bucket_size_list):
-        tensor = torch.randn(1, bucket_size).to(args.local_rank)
-        repeat = 50
-        start = time.time()
-        for i in range(repeat):
-            torch.cuda.nvtx.range_push('runtime pure_allreduce')
-            torch.distributed.all_reduce(tensor, op=torch.distributed.ReduceOp.SUM)
-            torch.cuda.synchronize(args.local_rank)
-            torch.cuda.nvtx.range_pop()
-        end = time.time()
-        torch.distributed.barrier()
-        duration=(end-start)/repeat*1000
-        if args.rank == 0 :
-            print("pytorch pure allreduce idx=%d, floats=%d, bytes=%d, duration=%fms, bw=%fGB/s"%(idx, bucket_size, bucket_size*4, duration, bucket_size*4/1024/1024/1024/(duration/1000)))
 
-    if args.world_size > 1:
-        torch.distributed.barrier()
     torch.cuda.cudart().cudaProfilerStop()
 
 
