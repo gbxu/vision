@@ -96,7 +96,7 @@ def pytorch_train():
         print("== init iteration")
     if args.world_size > 1:
         torch.distributed.barrier()
-    for bucket_size in init_bucket_size_list:
+    for idx, bucket_size in enumerate(init_bucket_size_list):
         tensor = torch.randn(1, bucket_size).to(args.local_rank)
         repeat = 50
         start = time.time()
@@ -109,14 +109,14 @@ def pytorch_train():
         torch.distributed.barrier()
         duration=(end-start)/repeat*1000
         if args.rank == 0 :
-            print("pytorch pure allreduce floats=%d, bytes=%d, duration=%fms, bw=%fGB/s"%(bucket_size, bucket_size*4, duration, bucket_size*4/1024/1024/1024/(duration/1000)))
+            print("pytorch pure allreduce idx=%d, floats=%d, bytes=%d, duration=%fms, bw=%fGB/s"%(idx, bucket_size, bucket_size*4, duration, bucket_size*4/1024/1024/1024/(duration/1000)))
 
 
     if args.rank == 0 :
         print("== runtime iteration")
     if args.world_size > 1:
         torch.distributed.barrier()
-    for bucket_size in bucket_size_list:
+    for idx, bucket_size in enumerate(bucket_size_list):
         tensor = torch.randn(1, bucket_size).to(args.local_rank)
         repeat = 50
         start = time.time()
@@ -129,7 +129,7 @@ def pytorch_train():
         torch.distributed.barrier()
         duration=(end-start)/repeat*1000
         if args.rank == 0 :
-            print("pytorch pure allreduce floats=%d, bytes=%d, duration=%fms, bw=%fGB/s"%(bucket_size, bucket_size*4, duration, bucket_size*4/1024/1024/1024/(duration/1000)))
+            print("pytorch pure allreduce idx=%d, floats=%d, bytes=%d, duration=%fms, bw=%fGB/s"%(idx, bucket_size, bucket_size*4, duration, bucket_size*4/1024/1024/1024/(duration/1000)))
 
     if args.world_size > 1:
         torch.distributed.barrier()
