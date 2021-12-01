@@ -1,5 +1,7 @@
 import torch
 import sys
+
+from torch._C import T
 # import os
 # sys.path.append(os.environ["HOME"]+"/vision/")
 import torchvision # https://pytorch.org/vision/stable/models.html
@@ -155,7 +157,7 @@ class WrapperModelAux(torch.nn.Module):
             loss = self.loss(out, labels)
             return loss
 
-def get_model_with_datas(model_name, set_batch_size):
+def get_model_with_datas(model_name, set_batch_size, infer_shape=False):
     print("get models and datas:", model_name)
     torchvision_model, (batch_size, channels, height, width), (num_classes, ) = get_model[model_name]
     if set_batch_size > 0:
@@ -177,7 +179,10 @@ def get_model_with_datas(model_name, set_batch_size):
         model=WrapperModel(torchvision_model)
     # model.train()
     model.eval()
-    dynamic_axes=infer_shapes(model, inputs, batch_size)
+    if infer_shape:
+        dynamic_axes=infer_shapes(model, inputs, batch_size)
+    else:
+        dynamic_axes=None
 
     return model, input_args, ordered_input_names, output_names, dynamic_axes
 
@@ -193,7 +198,7 @@ if __name__ == '__main__':
         model_names = args.model_name.split(',')
     for args.model_name in model_names:
         try:
-            model, input_args, ordered_input_names, output_names, dynamic_axes = get_model_with_datas(args.model_name, args.batch_size)
+            model, input_args, ordered_input_names, output_names, dynamic_axes = get_model_with_datas(args.model_name, args.batch_size, infer_shape=True)
             torch.onnx.export(
                 model=model,
                 args=input_args,
