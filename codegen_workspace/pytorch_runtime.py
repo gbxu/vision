@@ -137,8 +137,8 @@ def pytorch_train():
             end = time.time()
             torch.distributed.barrier()
             duration=(end-start)/repeat*1000
-        if args.rank == 0 :
-            print("pytorch pure allreduce idx=%d, floats=%d, bytes=%d, duration=%fms, bw=%fGB/s"%(idx, bucket_size, bucket_size*4, duration, bucket_size*4/1024/1024/1024/(duration/1000)))
+            if args.rank == 0 :
+                print("pytorch pure allreduce idx=%d, floats=%d, bytes=%d, duration=%fms, bw=%fGB/s"%(idx, bucket_size, bucket_size*4, duration, bucket_size*4/1024/1024/1024/(duration/1000)))
         torch.distributed.barrier()
 
     torch.cuda.cudart().cudaProfilerStop()
