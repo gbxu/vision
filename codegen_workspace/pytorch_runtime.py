@@ -88,6 +88,9 @@ def pytorch_train():
     torch.cuda.cudart().cudaProfilerStart()
     start = time.time()
     for i in range(repeat):
+        bucket_size_list.clear()
+        bucket_shape_list.clear()
+        bucket_idx_list.clear()
         torch.cuda.nvtx.range_push('iteration')
         optimizer.zero_grad()
         loss = model(images, labels)
