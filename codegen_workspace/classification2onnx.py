@@ -74,14 +74,14 @@ get_model={
 
     "vgg11": (torchvision.models.vgg11(), (256, 3, 224, 224), (1000,)),
     # "vgg11_bn": (torchvision.models.vgg11_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "vgg13": (torchvision.models.vgg13(), (256, 3, 224, 224), (1000,)),
+    "vgg13": (torchvision.models.vgg13(), (128, 3, 224, 224), (1000,)),
     # "vgg13_bn": (torchvision.models.vgg13_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "vgg16": (torchvision.models.vgg16(), (256, 3, 224, 224), (1000,)),
+    "vgg16": (torchvision.models.vgg16(), (128, 3, 224, 224), (1000,)),
     # "vgg16_bn": (torchvision.models.vgg16_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
-    "vgg19": (torchvision.models.vgg19(), (256, 3, 224, 224), (1000,)), # V100-32GB
+    "vgg19": (torchvision.models.vgg19(), (128, 3, 224, 224), (1000,)), # V100-32GB
     # "vgg19_bn": (torchvision.models.vgg19_bn(), (1, 3, 224, 224), (1000,)), # No backward for BatchNormInference in NNFusion
     
-    "wide_resnet50_2": (torchvision.models.wide_resnet50_2(norm_layer=torch.nn.Identity), (512, 3, 224, 224), (1000,)),
+    "wide_resnet50_2": (torchvision.models.wide_resnet50_2(norm_layer=torch.nn.Identity), (256, 3, 224, 224), (1000,)),
     "wide_resnet101_2": (torchvision.models.wide_resnet101_2(norm_layer=torch.nn.Identity), (256, 3, 224, 224), (1000,)),
 }
 
