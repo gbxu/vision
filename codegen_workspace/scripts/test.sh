@@ -32,7 +32,7 @@ do
     cd ${SHELL_FOLDER}/../testmodels/${model_name}_bs${dic[$model_name]}/single_cudalib/cuda_codegen/ && rm -rf build && mkdir build && cd build && cmake .. && make -j && cp -r ../Constant ./
 done
 
-LOG_DIR="${HOME}/vison_log/"
+LOG_DIR="${HOME}/vision_log/"
 
 PROFILER_CMD="nsys profile -f true -c cudaProfilerApi --stop-on-range-end=true "
 # "/usr/local/cuda-10.0/bin/nvprof --profile-child-processes --profile-from-start off -o ${LOG_PATH}/%h.%p.nvvp "
