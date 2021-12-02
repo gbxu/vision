@@ -1,7 +1,5 @@
 import torch
 import sys
-
-from torch._C import T
 # import os
 # sys.path.append(os.environ["HOME"]+"/vision/")
 import torchvision # https://pytorch.org/vision/stable/models.html
