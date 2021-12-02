@@ -84,7 +84,7 @@ def pytorch_train():
             init_bucket_shape_list = bucket_shape_list
             init_bucket_idx_list = bucket_idx_list
 
-    repeat = 50
+    repeat = args.repeat
     torch.cuda.cudart().cudaProfilerStart()
     start = time.time()
     for i in range(repeat):
@@ -130,7 +130,7 @@ def pytorch_train():
         torch.distributed.barrier()
         for idx, bucket_size in enumerate(bucket_size_list):
             tensor = torch.randn(1, bucket_size).to(args.local_rank)
-            repeat = 50
+            repeat = args.repeat
             start = time.time()
             for i in range(repeat):
                 torch.cuda.nvtx.range_push('runtime pure_allreduce')
@@ -149,6 +149,7 @@ def pytorch_train():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument("--repeat", type=int, default=50, help="")
     parser.add_argument("--rank", type=int, default=0, help="global rank")
     parser.add_argument("--model_type", type=str, default="classification", help="classification, segmentation, video, detection")
     parser.add_argument("--model_name", type=str, default=None, help="torchvision model name")

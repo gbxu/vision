@@ -35,7 +35,26 @@ GPU_PER_NODE=8
 NUM_NODES=$((${#NODE_LIST[@]}+1))
 
 declare -A dic
-dic=(["alexnet"]=4096 ["densenet121"]=128 ["densenet169"]=128 ["densenet161"]=128 ["densenet201"]=128 ["resnet18"]=2048 ["resnet34"]=1024 ["resnet50"]=512 ["resnet101"]=256 ["resnet152"]=256 ["squeezenet1_0"]=512 ["squeezenet1_1"]=1024 ["vgg11"]=512 ["vgg13"]=256 ["vgg16"]=256 ["vgg19"]=256 ["wide_resnet50_2"]=512 ["wide_resnet101_2"]=256 )
+dic=(\
+ ["alexnet"]=4096 \
+ ["densenet121"]=128 \
+ ["densenet161"]=128 \
+ ["densenet169"]=128 \
+ ["densenet201"]=128 \
+ ["resnet18"]=1024 \
+ ["resnet34"]=1024 \
+ ["resnet50"]=512 \
+ ["resnet101"]=256 \
+ ["resnet152"]=256 \
+ ["squeezenet1_0"]=512 \
+ ["squeezenet1_1"]=1024 \
+ ["vgg11"]=256 \
+ ["vgg13"]=256 \
+ ["vgg16"]=256 \
+ ["vgg19"]=256 \
+ ["wide_resnet50_2"]=512 \
+ ["wide_resnet101_2"]=256 \
+)
 
 ############ mpi options ############
 ALL_GPUS=$(($GPU_PER_NODE*$NUM_NODES))
@@ -57,7 +76,7 @@ do
     scp -r ${SHELL_FOLDER}/../*.py $node:${SHELL_FOLDER}/../
 done
 
-for i in `seq 3`
+for i in `seq 1`
 do
     for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
     do
@@ -72,7 +91,7 @@ done
 
 echo "contention analysis -------------------------------------------------------------------------------"
 
-for i in `seq 3`
+for i in `seq 1`
 do
     for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
     do
@@ -82,7 +101,7 @@ do
         echo "${LOG_PATH} ======================================"
         ${MPI_CMD} -output-filename ${LOG_PATH} -H ${ALL_NODES} -np ${ALL_GPUS} \
         ${PROFILER_CMD} -o ${LOG_PATH}/%h.%p.nvvp \
-        python3 pytorch_runtime.py --master_ip ${MASTER} --model_name $model_name --batch_size ${dic[$model_name]} > ${LOG_PATH}/result.txt
+        python3 pytorch_runtime.py --master_ip ${MASTER} --model_name $model_name --batch_size ${dic[$model_name]} --repeat 1 > ${LOG_PATH}/result.txt
     done
 done
 
@@ -103,7 +122,7 @@ done
 
 echo "performance-------------------------------------------------------------------------------"
 
-for i in `seq 3`
+for i in `seq 1`
 do
     for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
     do
@@ -118,7 +137,7 @@ done
 
 echo "contention analysis -------------------------------------------------------------------------------"
 
-for i in `seq 3`
+for i in `seq 1`
 do
     for model_name in "alexnet" "densenet121" "densenet169" "densenet161" "densenet201" "resnet18" "resnet34" "resnet50" "resnet101" "resnet152" "squeezenet1_0" "squeezenet1_1" "vgg11" "vgg13" "vgg16" "vgg19" "wide_resnet50_2" "wide_resnet101_2"
     do
